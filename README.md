@@ -1,4 +1,4 @@
-# Semi-Atuomatic Differentiation
+# Semi-Automatic Differentiation
 
 
 ## Prerequisites
