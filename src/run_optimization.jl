@@ -6,6 +6,7 @@ using QuantumControl.WeylChamber: D_PE, gate_concurrence, unitarity
 
 using .TransmonModel: guess_pulses, hamiltonian, ket
 using .GHzUnits
+using .FullADOptimization
 
 const 𝕚 = 1im
 const sqrt_iSWAP = [
@@ -14,6 +15,8 @@ const sqrt_iSWAP = [
     0  𝕚/√2  1/√2  0
     0    0     0   1
 ]
+
+optimize(problem; method=method::Val{:full_ad}) = optimize_full_ad(problem)
 
 
 """Run an optimization for a fixed number of iterations.
@@ -26,7 +29,7 @@ run_optimization(;
 
 # Keyword Arguments
 
-*   `method`: one of `:grape`, `:krotov`
+*   `method`: one of `:grape`, `:krotov`, `:full_ad`
 
 *   `iters=10`: Number of iterations to do
 
@@ -139,7 +142,7 @@ function run_optimization(;
     )
 
     no_info_hook(args...; kwargs...) = nothing
-
+        
     if quiet
         optimize(problem; method=method, info_hook=no_info_hook)
     else
