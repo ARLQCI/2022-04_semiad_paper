@@ -1,3 +1,4 @@
+import QuantumControlBase
 using QuantumControl
 using QuantumControl.Shapes: flattop
 using QuantumControl.Functionals: J_T_sm, make_gradient, make_chi, make_gate_chi, gate_functional
@@ -16,7 +17,7 @@ const sqrt_iSWAP = [
     0    0     0   1
 ]
 
-optimize(problem; method=method::Val{:full_ad}) = optimize_full_ad(problem)
+QuantumControlBase.optimize(problem, method::Val{:full_ad}) = optimize_full_ad(problem)
 
 
 """Run an optimization for a fixed number of iterations.
@@ -142,7 +143,7 @@ function run_optimization(;
     )
 
     no_info_hook(args...; kwargs...) = nothing
-        
+
     if quiet
         optimize(problem; method=method, info_hook=no_info_hook)
     else
