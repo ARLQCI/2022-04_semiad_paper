@@ -81,10 +81,13 @@ def benchmark_times_alloc(cmd):
                 "ERROR for %s: %s" % (" ".join(cmd), exc_info), file=sys.stderr
             )
             return np.NaN, np.NaN
-    data = h5py.File(file, "r")
-    nanosec_per_fg = data["nanosec_per_fg"][()]
-    alloc_memory_MB = data["alloc_memory_MB"][()]
-    return nanosec_per_fg, alloc_memory_MB
+    try:
+        data = h5py.File(file, "r")
+        nanosec_per_fg = data["nanosec_per_fg"][()]
+        alloc_memory_MB = data["alloc_memory_MB"][()]
+        return nanosec_per_fg, alloc_memory_MB
+    except OSError:
+        return np.NaN, np.NaN
 
 
 def benchmark_mem(cmd, baseline_mb=0):
@@ -122,8 +125,11 @@ def _benchmark_mem(cmd, filename, baseline_mb=0):
                 "ERROR for %s: %s" % (" ".join(cmd), exc_info), file=sys.stderr
             )
             return np.NaN
-    measurements = np.loadtxt(file)
-    return np.max(measurements)
+    try:
+        measurements = np.loadtxt(file)
+        return np.max(measurements)
+    except OSError:
+        return np.NaN
 
 
 def assemble_cmds(base, spec):
