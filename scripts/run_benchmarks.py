@@ -12,27 +12,15 @@ import h5py
 
 
 BENCHMARKS = {
-    "PE_benchmark_levels": {
+    "SM_benchmark_levels": {
         "method": "grape",
-        "args": ["J_T_PE", "{levels}", "100"],
+        "args": ["J_T_sm", "{levels}", "100"],
         "var": "levels",
         "vals": [3, 4, 5, 6, 7, 8, 9, 10, 15],
     },
-    "PE_benchmark_times": {
+    "SM_benchmark_times": {
         "method": "grape",
-        "args": ["J_T_PE", "5", "{T}"],
-        "var": "T",
-        "vals": [20, 50, 100, 200, 300, 400, 500, 800],
-    },
-    "PE_benchmark_levels_full_ad": {
-        "method": "full_ad",
-        "args": ["J_T_PE", "{levels}", "100"],
-        "var": "levels",
-        "vals": [3, 4, 5, 6, 7, 8, 9, 10, 15],
-    },
-    "PE_benchmark_times_full_ad": {
-        "method": "full_ad",
-        "args": ["J_T_PE", "5", "{T}"],
+        "args": ["J_T_sm", "5", "{T}"],
         "var": "T",
         "vals": [20, 50, 100, 200, 300, 400, 500, 800],
     },
