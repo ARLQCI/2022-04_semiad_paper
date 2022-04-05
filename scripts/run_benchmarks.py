@@ -4,6 +4,7 @@ from multiprocessing import Pool
 from subprocess import STDOUT, run, SubprocessError
 
 from datetime import datetime
+from functools import partial
 import sys
 import psutil
 import numpy as np
@@ -71,7 +72,8 @@ def benchmark_times_alloc(cmd):
     if not file.is_file():
         try:
             print("RUN:", " ".join(cmd), file=sys.stderr)
-            with open(file.with_suffix(".log"), "w") as proc_log:
+            log_file = file.with_suffix(".log")
+            with open(log_file, "wb", buffering=0) as proc_log:
                 run(cmd, stderr=STDOUT, stdout=proc_log)
             print("DONE", " ".join(cmd), file=sys.stderr)
         except SubprocessError as exc_info:
@@ -85,29 +87,31 @@ def benchmark_times_alloc(cmd):
     return nanosec_per_fg, alloc_memory_MB
 
 
-def benchmark_mem(cmd):
+def benchmark_mem(cmd, baseline_mb=0):
     functional = cmd[-3]
     levels = int(cmd[-2])
     T = int(cmd[-1])
     method = get_option(cmd, "--method", "grape")
     filename = "%s_%s_levels=%d_T=%d_mem.dat" % (method, functional, levels, T)
-    return _benchmark_mem(cmd, filename)
+    return _benchmark_mem(cmd, filename, baseline_mb=baseline_mb)
 
 
-def _benchmark_mem(cmd, filename):
+def _benchmark_mem(cmd, filename, baseline_mb=0):
     file = Path("data", "benchmarks", filename)
     if not file.is_file():
         try:
             measurements = []
             for i in range(3):
                 print("RUN:", " ".join(cmd), file=sys.stderr)
-                with open(file.with_suffix(".log"), "w") as proc_log:
+                log_file = file.with_suffix(".log")
+                with open(log_file, "wb", buffering=0) as proc_log:
                     process = psutil.Popen(cmd, stderr=STDOUT, stdout=proc_log)
                 peak_mem = 0
                 while process.is_running():
                     if process.status() == psutil.STATUS_ZOMBIE:
                         break
                     mem = 1e-6 * process.memory_info().rss  # in MB
+                    mem = mem - baseline_mb
                     if mem > peak_mem:
                         peak_mem = mem
                 print("DONE", " ".join(cmd), file=sys.stderr)
@@ -147,7 +151,7 @@ def main():
             file=log_fh,
         )
         log_fh.flush()
-        baseline_mem = _benchmark_mem(
+        baseline_mb = _benchmark_mem(
             [
                 "julia",
                 "--sysimage=semiad_sysimage.so",
@@ -156,7 +160,9 @@ def main():
             ],
             filename="hello_world_mem.dat",
         )
-        print("Baseline RSS memory (MB)", baseline_mem, "MB", file=sys.stderr)
+        print("Baseline RSS memory (MB)", baseline_mb, "MB", file=sys.stderr)
+        baseline_file = Path("data", "benchmarks", "hello_world_mem.dat")
+        baseline_file.unlink(missing_ok=True)
         for (name, spec) in BENCHMARKS.items():
             for cmd in assemble_cmds(CMD_TIMES_BASE, spec):
                 print("Schedule: " + " ".join(cmd), file=log_fh)
@@ -169,11 +175,12 @@ def main():
             data_times = worker.map(
                 benchmark_times_alloc, tasks_benchmark_times
             )
+        benchmark_mem_rel = partial(benchmark_mem, baseline_mb=baseline_mb)
         with Pool(num_cpus // 2) as worker:
             # each memory benchmark takes two cores (process and watcher)
-            data_mem = worker.map(benchmark_mem, tasks_benchmark_mem)
+            data_mem = worker.map(benchmark_mem_rel, tasks_benchmark_mem)
         for (name, spec) in BENCHMARKS.items():
-            outfile = Path("data", "benchmarks", "benchmark_%s.csv" % name)
+            outfile = Path("data", "benchmarks", "%s.csv" % name)
             print("Writing ", outfile, file=log_fh)
             log_fh.flush()
             with open(outfile, "w") as out_fh:
@@ -182,6 +189,7 @@ def main():
                     "nanosec_per_fg",
                     "alloc_memory_MB",
                     "rss_memory_MB",
+                    "rss_baseline_MB",
                     sep=",",
                     file=out_fh,
                 )
@@ -195,6 +203,7 @@ def main():
                         nanosec_per_fg,
                         alloc_memory_MB,
                         rss_memory_MB,
+                        baseline_mb,
                         sep=",",
                         file=out_fh,
                     )
