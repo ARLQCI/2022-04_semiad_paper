@@ -21,7 +21,7 @@ help:  ## Show this help
 	@$(JULIA) -e "$$PRINT_HELP_JLSCRIPT" < $(MAKEFILE_LIST)
 
 $(PYTHON): requirements.txt
-	python3.9 -m venv .venv
+	python3 -m venv .venv
 	$(PYTHON) -m pip install --upgrade pip
 	$(PYTHON) -m pip install -r requirements.txt
 
