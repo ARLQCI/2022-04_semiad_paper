@@ -21,7 +21,8 @@ end
 
 USAGE: julia scripts/benchmark_optimization.jl [options]  FUNCTIONAL LEVELS T
 
-Options are `--method=NAME`, `--unitarity-weight=VALUE`, `--use-threads`.
+Options are `--method=NAME`, `--unitarity-weight=VALUE`, `--iters=NUM`,
+`--use-threads`.
 
 See documentation of `run_optimization` function for details.
 
@@ -38,6 +39,7 @@ function main(args=ARGS)
         T = parse(Float64, ARGS[end])
         method = Symbol(get_option(args, "--method", "grape"))
         unitarity_weight = parse(Float64, get_option(args, "--unitarity-weight", "0.5"))
+        iters = parse(Int64, get_option(args, "--iters", "10"))
         use_threads = "--use-threads" ∈ args
         force = "--force" ∈ args
     catch exc
@@ -50,13 +52,13 @@ function main(args=ARGS)
     produce_or_load(datadir("benchmarks"), c; filename=filename, force=force) do c
         #! format: off
         opt_result = run_optimization(;
-            method, levels, functional, unitarity_weight, T, use_threads
+            method, levels, functional, unitarity_weight, T, use_threads, iters
         )
         println("Benchmarking...")
         benchmark_result = @benchmark run_optimization(;
             method=$method, levels=$levels, functional=$functional,
             unitarity_weight=$unitarity_weight, T=$T, use_threads=$use_threads,
-            quiet=true,
+            iters=$iters, quiet=true,
         )
         #! format: on
         display(benchmark_result)
