@@ -37,6 +37,54 @@ BENCHMARKS = {
         "var": "T",
         "vals": [20, 50, 100, 200, 300, 400, 500, 800],
     },
+    "SM_benchmark_levels": {
+        "method": "grape",
+        "args": ["J_T_sm", "{levels}", "100"],
+        "var": "levels",
+        "vals": [3, 4, 5, 6, 7, 8, 9, 10, 15],
+    },
+    "SM_benchmark_times": {
+        "method": "grape",
+        "args": ["J_T_sm", "5", "{T}"],
+        "var": "T",
+        "vals": [20, 50, 100, 200, 300, 400, 500, 800],
+    },
+    "SM_SemiAD_benchmark_levels": {
+        "method": "grape",
+        "args": ["J_T_sm_AD", "{levels}", "100"],
+        "var": "levels",
+        "vals": [3, 4, 5, 6, 7, 8, 9, 10, 15],
+    },
+    "SM_SemiAD_benchmark_times": {
+        "method": "grape",
+        "args": ["J_T_sm_AD", "5", "{T}"],
+        "var": "T",
+        "vals": [20, 50, 100, 200, 300, 400, 500, 800],
+    },
+    "SM_FullAD_benchmark_levels": {
+        "method": "full_ad",
+        "args": ["J_T_sm", "{levels}", "100"],
+        "var": "levels",
+        "vals": [3, 4, 5, 6, 7, 8],
+    },
+    "SM_FullAD_benchmark_times": {
+        "method": "full_ad",
+        "args": ["J_T_sm", "5", "{T}"],
+        "var": "T",
+        "vals": [20, 50, 100, 200, 300, 400, 500],
+    },
+    "SM_FullADcheby_benchmark_levels": {
+        "method": "full_ad_cheby",
+        "args": ["J_T_sm", "{levels}", "100"],
+        "var": "levels",
+        "vals": [3, 4, 6, 7, 8],
+    },
+    "SM_FullADcheby_benchmark_times": {
+        "method": "full_ad_cheby",
+        "args": ["J_T_sm", "5", "{T}"],
+        "var": "T",
+        "vals": [20, 50, 100, 200, 300, 400, 500],
+    },
 }
 
 
