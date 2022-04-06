@@ -9,6 +9,7 @@ include("GHz_units.jl")
 include("transmon_model.jl")
 include("visualization.jl")
 include("full_ad_optimization.jl")
+include("full_ad_cheby_optimization.jl")
 
 ###############################################################################
 

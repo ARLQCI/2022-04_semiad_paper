@@ -8,6 +8,7 @@ using QuantumControl.WeylChamber: D_PE, gate_concurrence, unitarity
 using .TransmonModel: guess_pulses, hamiltonian, ket
 using .GHzUnits
 using .FullADOptimization
+using .FullADChebyOptimization
 
 const 𝕚 = 1im
 const sqrt_iSWAP = [
@@ -18,6 +19,7 @@ const sqrt_iSWAP = [
 ]
 
 QuantumControlBase.optimize(problem, method::Val{:full_ad}) = optimize_full_ad(problem)
+QuantumControlBase.optimize(problem, method::Val{:full_ad_cheby}) = optimize_full_ad_cheby(problem)
 
 
 """Run an optimization for a fixed number of iterations.
