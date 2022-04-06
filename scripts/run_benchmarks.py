@@ -218,7 +218,8 @@ def main():
                 "scripts/hello_world.jl",
             ],
             filename="hello_world_mem.dat",
-        )
+        )[1]
+        assert baseline_mb > 0.0
         print("Baseline RSS memory (MB)", baseline_mb, "MB", file=sys.stderr)
         baseline_file = Path("data", "benchmarks", "hello_world_mem.dat")
         baseline_file.unlink(missing_ok=True)
