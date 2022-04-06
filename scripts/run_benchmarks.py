@@ -5,6 +5,7 @@ from subprocess import STDOUT, run, SubprocessError
 
 from datetime import datetime
 from functools import partial
+import time
 import sys
 import psutil
 import numpy as np
@@ -103,8 +104,9 @@ def _benchmark_mem(cmd, filename, baseline_mb=0):
     file = Path("data", "benchmarks", filename)
     if not file.is_file():
         try:
-            measurements = []
+            measurements = [float(baseline_mb)]
             for i in range(3):
+                t_start = time.time()
                 log_file = file.with_suffix(".log")
                 print("RUN:", " ".join(cmd), ">", log_file, file=sys.stderr)
                 with open(log_file, "wb", buffering=0) as proc_log:
@@ -119,17 +121,20 @@ def _benchmark_mem(cmd, filename, baseline_mb=0):
                         peak_mem = mem
                 print("DONE", " ".join(cmd), file=sys.stderr)
                 measurements.append(peak_mem)
+                if (time.time() - t_start) > (24 * 3600):
+                    break
             np.savetxt(file, measurements)
         except psutil.Error as exc_info:
             print(
                 "ERROR for %s: %s" % (" ".join(cmd), exc_info), file=sys.stderr
             )
-            return np.NaN
+            return baseline_mb, np.NaN
     try:
         measurements = np.loadtxt(file)
-        return np.max(measurements)
+        baseline_mb = measurements[0]
+        return baseline_mb, np.max(measurements[1:])
     except OSError:
-        return np.NaN
+        return baseline_mb, np.NaN
 
 
 def assemble_cmds(base, spec):
@@ -137,7 +142,7 @@ def assemble_cmds(base, spec):
     for v in spec["vals"]:
         args = [arg.format(**{spec["var"]: v}) for arg in spec["args"]]
         options = []
-        for key in ["method"]:
+        for key in ["method", "iters"]:
             if key in spec:
                 options.append("--{key}={val}".format(key=key, val=spec[key]))
         cmds.append(base + options + args)
@@ -205,7 +210,8 @@ def main():
                 for val in spec["vals"]:
                     nanosec_per_fg = data_times[i][0]
                     alloc_memory_MB = data_times[i][1]
-                    rss_memory_MB = data_mem[i]
+                    baseline_mb = data_mem[i][0]
+                    rss_memory_MB = data_mem[1]
                     print(
                         val,
                         nanosec_per_fg,
