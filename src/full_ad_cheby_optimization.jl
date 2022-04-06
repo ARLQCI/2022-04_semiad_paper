@@ -27,15 +27,12 @@ function cheby(Ψ, H, dt, wrk; kwargs...)
     a = wrk.coeffs
     ϵ = wrk.limit
     @assert length(a) > 1 "Need at least 2 Chebychev coefficients"
-    v0 = wrk.v0
-    v1 = wrk.v1
-    v2 = wrk.v2
 
     v0 = Ψ
-    Ψ = a[1] * v0
+    Φ = a[1] * v0
 
     v1 = c * (H * v0 - β * v0)
-    Ψ += a[2] * v1
+    Φ += a[2] * v1
 
     c *= 2
 
@@ -50,7 +47,7 @@ function cheby(Ψ, H, dt, wrk; kwargs...)
         end
         v2 += v0
 
-        Ψ += a[i] * v2
+        Φ += a[i] * v2
 
         aux = 1*v0
         v0 = 1*v1
@@ -62,7 +59,7 @@ function cheby(Ψ, H, dt, wrk; kwargs...)
 
     end
 
-    return exp(-im * β * dt) * Ψ
+    return exp(-im * β * dt) * Φ
 
 end
 
