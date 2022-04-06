@@ -71,8 +71,8 @@ def benchmark_times_alloc(cmd):
     file = Path("data", "benchmarks", filename)
     if not file.is_file():
         try:
-            print("RUN:", " ".join(cmd), file=sys.stderr)
             log_file = file.with_suffix(".log")
+            print("RUN:", " ".join(cmd), ">", log_file, file=sys.stderr)
             with open(log_file, "wb", buffering=0) as proc_log:
                 run(cmd, stderr=STDOUT, stdout=proc_log)
             print("DONE", " ".join(cmd), file=sys.stderr)
@@ -105,8 +105,8 @@ def _benchmark_mem(cmd, filename, baseline_mb=0):
         try:
             measurements = []
             for i in range(3):
-                print("RUN:", " ".join(cmd), file=sys.stderr)
                 log_file = file.with_suffix(".log")
+                print("RUN:", " ".join(cmd), ">", log_file, file=sys.stderr)
                 with open(log_file, "wb", buffering=0) as proc_log:
                     process = psutil.Popen(cmd, stderr=STDOUT, stdout=proc_log)
                 peak_mem = 0
@@ -181,10 +181,13 @@ def main():
             data_times = worker.map(
                 benchmark_times_alloc, tasks_benchmark_times
             )
+        print("data_times = %s" % repr(data_times), file=log_fh)
         benchmark_mem_rel = partial(benchmark_mem, baseline_mb=baseline_mb)
         with Pool(num_cpus // 2) as worker:
             # each memory benchmark takes two cores (process and watcher)
             data_mem = worker.map(benchmark_mem_rel, tasks_benchmark_mem)
+        print("data_mem = %s" % repr(data_mem), file=log_fh)
+        i = 0  # index in data_times, data_mem
         for (name, spec) in BENCHMARKS.items():
             outfile = Path("data", "benchmarks", "%s.csv" % name)
             print("Writing ", outfile, file=log_fh)
@@ -199,8 +202,7 @@ def main():
                     sep=",",
                     file=out_fh,
                 )
-                for i in range(len(spec["vals"])):
-                    val = spec["vals"][i]
+                for val in spec["vals"]:
                     nanosec_per_fg = data_times[i][0]
                     alloc_memory_MB = data_times[i][1]
                     rss_memory_MB = data_mem[i]
@@ -213,6 +215,8 @@ def main():
                         sep=",",
                         file=out_fh,
                     )
+                    i += 1
+        assert len(data_times) == len(data_mem) == i
         print(
             "Done at",
             datetime.now().strftime("%Y-%m-%d %H:%M:%S %z"),
