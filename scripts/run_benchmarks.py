@@ -48,6 +48,18 @@ BENCHMARKS = {
         "var": "T",
         "vals": [20, 50, 100, 200, 300, 400, 500, 800],
     },
+    "SM_FullADcheby_benchmark_levels": {
+        "method": "full_ad_cheby",
+        "args": ["J_T_sm", "{levels}", "100"],
+        "var": "levels",
+        "vals": [3, 4, 6, 7, 8],
+    },
+    "SM_FullADcheby_benchmark_times": {
+        "method": "full_ad_cheby",
+        "args": ["J_T_sm", "5", "{T}"],
+        "var": "T",
+        "vals": [20, 50, 100, 200, 300, 400, 500, 800],
+    },
 }
 
 
