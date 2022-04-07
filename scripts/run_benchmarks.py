@@ -260,7 +260,7 @@ def main():
                     nanosec_per_fg = data_times[i][0]
                     alloc_memory_MB = data_times[i][1]
                     baseline_mb = data_mem[i][0]
-                    rss_memory_MB = data_mem[1]
+                    rss_memory_MB = data_mem[i][1]
                     print(
                         val,
                         nanosec_per_fg,

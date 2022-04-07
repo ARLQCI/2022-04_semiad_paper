@@ -32,7 +32,7 @@ Further options are:
 
 """
 function main(args=ARGS)
-    local functional, levels, T, method, unitarity_weight, use_threads, force
+    local functional, levels, T, method, unitarity_weight, use_threads, force, iters
     try
         functional = Symbol(ARGS[end-2])
         levels = parse(Int64, ARGS[end-1])
