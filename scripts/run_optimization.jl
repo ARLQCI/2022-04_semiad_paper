@@ -25,7 +25,7 @@ This script is a direct wrapper around the `run_optimization` function,
 allowing it to be benchmarked at a process level.
 """
 function main(args=ARGS)
-    local functional, levels, T, method, unitarity_weight, use_threads
+    local functional, levels, T, method, unitarity_weight, use_threads, iters
     try
         functional = Symbol(ARGS[end-2])
         levels = parse(Int64, ARGS[end-1])
