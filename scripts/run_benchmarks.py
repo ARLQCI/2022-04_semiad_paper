@@ -153,8 +153,8 @@ def _benchmark_mem(cmd, filename, baseline_mb=0):
     if not file.is_file():
         try:
             measurements = [float(baseline_mb)]
-            for i in range(3):
-                t_start = time.time()
+            t_start = time.time()
+            for i in range(20):
                 log_file = file.with_suffix(".log")
                 print("RUN:", " ".join(cmd), ">", log_file, file=sys.stderr)
                 with open(log_file, "wb", buffering=0) as proc_log:
