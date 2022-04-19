@@ -9,6 +9,8 @@
 /.venv
 /Manifest.toml
 /*.tgz
+/data/plots/*.pdf
+/data/plots/plots.log
 
 
 ################################################################################

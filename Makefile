@@ -1,4 +1,4 @@
-.PHONY: init help devrepl clean distclean venv ipython benchmarks
+.PHONY: init help devrepl clean distclean venv ipython benchmarks jupyter-notebook install uninstall plots
 
 .DEFAULT_GOAL := help
 
@@ -44,6 +44,20 @@ semiad_sysimage.so: Manifest.toml .initialized
 
 benchmarks: data/benchmarks/run_benchmarks.log  ## Run the benchmarks (after make semiad_sysimage.so)
 
+plots: data/plots/plots.log  ## Generate the plots
+
+data/plots/plots.log: notebooks/Plots.py $(PYTHON)
+	$(PYTHON) $< | tee $@
+
+install: $(PYTHON) ## install Jupyter kernel into user environment
+	$< -m ipykernel install --user --name semi-ad-paper --display-name "SemiAD Paper"
+
+uninstall: ## remove Jupyter kernel from user environment
+	jupyter kernelspec remove -f semi-ad-paper || true
+
+jupyter-notebook: install  ## run a notebook server (system-jupyter)
+	jupyter notebook --debug --no-browser
+
 data/benchmarks/run_benchmarks.log: scripts/run_benchmarks.py $(PYTHON)
 	$(PYTHON) $<
 
@@ -51,9 +65,10 @@ all: semiad_sysimage.so  data/benchmarks/run_benchmarks.log ## Generate all miss
 
 clean: ## Remove generated files
 	rm -f data/benchmarks/grape*.log
+	rm -f data/plots/*.pdf
 	rm -f lcov.info
 
-distclean: clean  ## Restore clean repository state
+distclean: uninstall clean  ## Restore clean repository state
 	rm -f .initialized
 	rm -rf .venv
 	rm -rf notebooks/.ipynb_checkpoints
