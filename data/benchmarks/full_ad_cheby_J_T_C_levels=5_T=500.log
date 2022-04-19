@@ -1,0 +1,38 @@
+ iter.        J_T     |∇J_T|       ΔJ_T   FG(F)    secs
+     0   1.63e-02   2.83e-02        n/a    1(0)    97.2
+     1   1.24e-02   2.83e-02  -3.94e-03    2(0)    80.7
+     2   1.13e-02   3.37e-02  -1.01e-03    2(0)    72.8
+     3   9.64e-03   1.30e-01  -1.70e-03    1(0)    33.3
+     4   6.05e-03   1.03e-01  -3.60e-03    1(0)    34.1
+     5   5.60e-03   2.68e-02  -4.50e-04    1(0)    35.5
+     6   1.60e-03   1.87e-02  -3.99e-03    1(0)    36.0
+     7   9.27e-04   1.33e-01  -6.76e-04    1(0)    34.9
+     8   3.97e-04   7.08e-02  -5.30e-04    1(0)    35.2
+     9   2.83e-04   3.27e-02  -1.14e-04    1(0)    36.2
+    10   2.65e-04   1.88e-02  -1.84e-05    1(0)    35.2
+[ Info: File /storage/goerz/2022-04_semiad_paper/data/benchmarks/full_ad_cheby_J_T_C_levels=5_T=500.jld2 does not exist. Producing it now...
+┌ Warning: The dictionary already has a key named `gitcommit`. We won't add any Git information.
+└ @ DrWatson ~/.julia/packages/DrWatson/S4dYA/src/saving_tools.jl:214
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+[ Info: File /storage/goerz/2022-04_semiad_paper/data/benchmarks/full_ad_cheby_J_T_C_levels=5_T=500.jld2 saved.
+Benchmarking...
+BenchmarkTools.Trial: 1 sample with 1 evaluation.
+ Single result which took 283.236 s (30.35% GC) to evaluate,
+ with a memory estimate of 172.40 GiB, over 504184911 allocations.

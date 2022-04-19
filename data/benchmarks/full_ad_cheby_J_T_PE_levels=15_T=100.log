@@ -1,0 +1,184 @@
+ iter.        J_T     |∇J_T|       ΔJ_T   FG(F)    secs
+     0   8.68e-01   1.07e-01        n/a    1(0)   112.2
+     1   7.59e-01   1.07e-01  -1.09e-01    1(0)    69.9
+     2   7.89e-02   1.23e-01  -6.80e-01    1(0)    78.4
+     3  -1.50e-02   1.17e-01  -9.39e-02    5(0)   484.3
+     4  -1.53e-02   2.29e-02  -3.17e-04    2(0)   186.3
+     5  -1.68e-02   2.76e-02  -1.53e-03    1(0)    98.7
+     6  -1.83e-02   2.39e-02  -1.45e-03    1(0)    91.7
+     7  -1.90e-02   2.89e-02  -7.29e-04    1(0)    81.9
+     8  -1.93e-02   1.55e-02  -2.56e-04    1(0)    83.9
+     9  -1.99e-02   1.38e-02  -5.89e-04    1(0)    82.4
+    10  -2.02e-02   2.09e-02  -3.19e-04    1(0)    85.7
+[ Info: File /storage/goerz/2022-04_semiad_paper/data/benchmarks/full_ad_cheby_J_T_PE_levels=15_T=100.jld2 does not exist. Producing it now...
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: The dictionary already has a key named `gitcommit`. We won't add any Git information.
+└ @ DrWatson ~/.julia/packages/DrWatson/S4dYA/src/saving_tools.jl:214
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+[ Info: File /storage/goerz/2022-04_semiad_paper/data/benchmarks/full_ad_cheby_J_T_PE_levels=15_T=100.jld2 saved.
+Benchmarking...
+BenchmarkTools.Trial: 1 sample with 1 evaluation.
+ Single result which took 774.018 s (44.59% GC) to evaluate,
+ with a memory estimate of 2150.23 GiB, over 249597233 allocations.

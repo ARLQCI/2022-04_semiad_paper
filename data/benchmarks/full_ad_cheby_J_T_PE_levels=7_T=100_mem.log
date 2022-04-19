@@ -1,0 +1,21 @@
+ iter.        J_T     |∇J_T|       ΔJ_T   FG(F)    secs
+     0   8.68e-01   1.07e-01        n/a    1(0)    45.9
+     1   7.59e-01   1.07e-01  -1.09e-01    1(0)     7.8
+     2   7.89e-02   1.23e-01  -6.80e-01    1(0)     7.6
+     3  -1.38e-02   1.17e-01  -9.28e-02    3(0)    22.2
+     4  -1.47e-02   4.76e-02  -8.52e-04    2(0)    14.7
+     5  -1.61e-02   5.22e-02  -1.39e-03    1(0)     7.5
+     6  -1.69e-02   1.90e-02  -8.03e-04    1(0)     6.7
+     7  -1.84e-02   1.60e-02  -1.58e-03    1(0)     7.5
+     8  -1.86e-02   1.64e-02  -1.80e-04    2(0)    14.4
+     9  -1.89e-02   2.04e-02  -3.16e-04    1(0)     7.8
+    10  -1.93e-02   1.26e-02  -3.65e-04    1(0)     7.0
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+┌ Warning: Ritz values did not converge within m_max=60
+└ @ QuantumPropagators.SpectralRange ~/.julia/packages/QuantumPropagators/HswVN/src/specrad.jl:176
+DONE

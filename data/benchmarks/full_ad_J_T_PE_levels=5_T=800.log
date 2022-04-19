@@ -1,0 +1,42 @@
+[ Info: File /storage/goerz/2022-04_semiad_paper/data/benchmarks/full_ad_J_T_PE_levels=5_T=800.jld2 does not exist. Producing it now...
+┌ Warning: The Git repository ('/storage/goerz/2022-04_semiad_paper') is dirty! Appending -dirty to the commit ID.
+└ @ DrWatson ~/.julia/packages/DrWatson/S4dYA/src/saving_tools.jl:65
+┌ Warning: The Git repository ('/storage/goerz/2022-04_semiad_paper') is dirty! Appending -dirty to the commit ID.
+└ @ DrWatson ~/.julia/packages/DrWatson/S4dYA/src/saving_tools.jl:65
+┌ Warning: The dictionary already has a key named `gitcommit`. We won't add any Git information.
+└ @ DrWatson ~/.julia/packages/DrWatson/S4dYA/src/saving_tools.jl:214
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+┌ Warning: you passed a key as a symbol instead of a string, it has been automatically converted
+└ @ JLD2 ~/.julia/packages/JLD2/k9Gt0/src/fileio.jl:10
+[ Info: File /storage/goerz/2022-04_semiad_paper/data/benchmarks/full_ad_J_T_PE_levels=5_T=800.jld2 saved.
+ iter.        J_T     |∇J_T|       ΔJ_T   FG(F)    secs
+     0   1.27e-02   3.96e-02        n/a    1(0)   805.5
+     1   6.63e-03   3.96e-02  -6.12e-03    1(0)   777.0
+     2   6.53e-03   1.05e-02  -9.70e-05    2(0)  1475.8
+     3   6.45e-03   3.82e-02  -7.69e-05    1(0)   733.5
+     4   6.44e-03   1.23e-02  -1.07e-05    1(0)   742.9
+     5   6.42e-03   7.96e-03  -2.12e-05    1(0)   724.1
+     6   6.38e-03   1.03e-02  -3.85e-05    1(0)   780.6
+     7   5.71e-03   1.72e-02  -6.76e-04    4(0)  2866.9
+     8   5.44e-03   7.21e-02  -2.64e-04    1(0)   708.7
+     9   4.69e-03   6.97e-02  -7.57e-04    2(0)  1381.6
+    10   3.26e-03   1.63e-01  -1.43e-03    1(0)   662.6
+Benchmarking...
+BenchmarkTools.Trial: 1 sample with 1 evaluation.
+ Single result which took 10951.581 s (9.08% GC) to evaluate,
+ with a memory estimate of 5762.47 GiB, over 177744044564 allocations.
