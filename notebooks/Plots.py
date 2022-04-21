@@ -6,11 +6,11 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.7
+#       jupytext_version: 1.13.6
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: SemiAD Paper
 #     language: python
-#     name: python3
+#     name: semi-ad-paper
 # ---
 
 # # Plots
@@ -55,6 +55,7 @@ default_colors = {
     ("PE", "Full-AD (ODE)"): color("green", 1),
     ("C", "Full-AD (ODE)"): color("green", 2),
     ("SM", "Full-AD (ODE)"): color("green", 3),
+    ("SM", "Direct (Cheby)"): "black",
 }
 
 MARKER = {
@@ -66,10 +67,10 @@ MARKER = {
     "halfsquare": dict(marker="s", fillstyle="top", markersize=5),
     "halfstar": dict(marker="*", fillstyle="top", markersize=5),
     "halfdiamond": dict(marker="D", fillstyle="top", markersize=5),
-    "emptycircle": dict(marker="o", fillstyle="none", markersize=5),
-    "emptysquare": dict(marker="s", fillstyle="none", markersize=5),
-    "emptystar": dict(marker="*", fillstyle="none", markersize=5),
-    "emptydiamond": dict(marker="D", fillstyle="none", markersize=5),
+    "emptycircle": dict(marker="o", fillstyle="none", markersize=7),
+    "emptysquare": dict(marker="s", fillstyle="none", markersize=7),
+    "emptystar": dict(marker="*", fillstyle="none", markersize=7),
+    "emptydiamond": dict(marker="D", fillstyle="none", markersize=7),
 }
 
 default_markers = {
@@ -82,6 +83,7 @@ default_markers = {
     ("PE", "Full-AD (ODE)"): MARKER["fulldiamond"],
     ("C", "Full-AD (ODE)"): MARKER["halfdiamond"],
     ("SM", "Full-AD (ODE)"): MARKER["emptydiamond"],
+    ("SM", "Direct (Cheby)"): MARKER["fullcircle"],
 }
 
 
@@ -124,6 +126,10 @@ class Benchmark:
                 method = "Full-AD (Cheby)"
             elif ("_full_ad." in filename) or ("_FullAD_" in filename):
                 method = "Full-AD (ODE)"
+            elif filename.startswith("SM_benchmark_"):
+                method = "Direct (Cheby)"
+            elif filename.startswith("SM_SemiAD_benchmark_"):
+                method = "Semi-AD (Cheby)"
         self.method = method
         if functional is None:
             if filename.startswith("PE_"):
@@ -274,26 +280,28 @@ def plot_comparison(
 plot_comparison(
     RuntimeBenchmark("PE_benchmark_levels.csv", in_inset=True),
     RuntimeBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
-    RuntimeBenchmark("SM_benchmark_levels.csv", in_inset=True),
+    RuntimeBenchmark("SM_SemiAD_benchmark_levels.csv", in_inset=True),
     RuntimeBenchmark("PE_benchmark_levels_full_ad_cheby.csv", in_inset=True),
     RuntimeBenchmark("C_benchmark_levels_full_ad_cheby.csv", in_inset=True),
     RuntimeBenchmark("SM_FullADcheby_benchmark_levels.csv", in_inset=True),
     RuntimeBenchmark("PE_benchmark_levels_full_ad.csv"),
     RuntimeBenchmark("C_benchmark_levels_full_ad.csv"),
     RuntimeBenchmark("SM_FullAD_benchmark_levels.csv"),
+    RuntimeBenchmark("SM_benchmark_levels.csv", in_inset=True),
     outfile="PE_runtimes_levels.pdf",
 )
 
 plot_comparison(
     RuntimeBenchmark("PE_benchmark_times.csv", in_inset=True),
     RuntimeBenchmark("C_benchmark_times_semi_ad.csv", in_inset=True),
-    RuntimeBenchmark("SM_benchmark_times.csv", in_inset=True),
+    RuntimeBenchmark("SM_SemiAD_benchmark_times.csv", in_inset=True),
     RuntimeBenchmark("PE_benchmark_times_full_ad_cheby.csv", in_inset=True),
     RuntimeBenchmark("C_benchmark_times_full_ad_cheby.csv", in_inset=True),
     RuntimeBenchmark("SM_FullADcheby_benchmark_times.csv", in_inset=True),
     RuntimeBenchmark("PE_benchmark_times_full_ad.csv"),
     RuntimeBenchmark("C_benchmark_times_full_ad.csv"),
     RuntimeBenchmark("SM_FullAD_benchmark_times.csv"),
+    RuntimeBenchmark("SM_benchmark_times.csv", in_inset=True),
     outfile="PE_runtimes_times.pdf",
     inset_pos=[0.1, 0.6, 0.35, 0.35]
 )
@@ -303,13 +311,14 @@ plot_comparison(
 plot_comparison(
     RSSBenchmark("PE_benchmark_levels.csv", in_inset=True),
     RSSBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
-    RSSBenchmark("SM_benchmark_levels.csv", in_inset=True),
+    RSSBenchmark("SM_SemiAD_benchmark_levels.csv", in_inset=True),
     RSSBenchmark("PE_benchmark_levels_full_ad_cheby.csv"),
     RSSBenchmark("C_benchmark_levels_full_ad_cheby.csv"),
     RSSBenchmark("SM_FullADcheby_benchmark_levels.csv"),
     RSSBenchmark("PE_benchmark_levels_full_ad.csv"),
     RSSBenchmark("C_benchmark_levels_full_ad.csv"),
     RSSBenchmark("SM_FullAD_benchmark_levels.csv"),
+    RSSBenchmark("SM_benchmark_levels.csv", in_inset=True),
     outfile="PE_memory_levels.pdf",
     inset_pos=[0.1, 0.6, 0.35, 0.35]
 )
@@ -317,13 +326,14 @@ plot_comparison(
 plot_comparison(
     RSSBenchmark("PE_benchmark_times.csv", in_inset=True),
     RSSBenchmark("C_benchmark_times_semi_ad.csv", in_inset=True),
-    RSSBenchmark("SM_benchmark_times.csv", in_inset=True),
+    RSSBenchmark("SM_SemiAD_benchmark_times.csv", in_inset=True),
     RSSBenchmark("PE_benchmark_times_full_ad_cheby.csv"),
     RSSBenchmark("C_benchmark_times_full_ad_cheby.csv"),
     RSSBenchmark("SM_FullADcheby_benchmark_times.csv"),
     RSSBenchmark("PE_benchmark_times_full_ad.csv"),
     RSSBenchmark("C_benchmark_times_full_ad.csv"),
     RSSBenchmark("SM_FullAD_benchmark_times.csv"),
+    RSSBenchmark("SM_benchmark_times.csv", in_inset=True),
     outfile="PE_memory_times.pdf",
     inset_pos=[0.1, 0.62, 0.35, 0.35]
 )
@@ -333,13 +343,14 @@ plot_comparison(
 plot_comparison(
     AllocBenchmark("PE_benchmark_levels.csv", in_inset=True),
     AllocBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
-    AllocBenchmark("SM_benchmark_levels.csv", in_inset=True),
+    AllocBenchmark("SM_SemiAD_benchmark_levels.csv", in_inset=True),
     AllocBenchmark("PE_benchmark_levels_full_ad_cheby.csv"),
     AllocBenchmark("C_benchmark_levels_full_ad_cheby.csv"),
     AllocBenchmark("SM_FullADcheby_benchmark_levels.csv"),
     AllocBenchmark("PE_benchmark_levels_full_ad.csv"),
     AllocBenchmark("C_benchmark_levels_full_ad.csv"),
     AllocBenchmark("SM_FullAD_benchmark_levels.csv"),
+    AllocBenchmark("SM_benchmark_levels.csv", in_inset=True),
     outfile="PE_allocated_levels.pdf",
     inset_pos=[0.5, 0.6, 0.35, 0.35]
 )
@@ -347,13 +358,14 @@ plot_comparison(
 plot_comparison(
     AllocBenchmark("PE_benchmark_times.csv", in_inset=True),
     AllocBenchmark("C_benchmark_times_semi_ad.csv", in_inset=True),
-    AllocBenchmark("SM_benchmark_times.csv", in_inset=True),
+    AllocBenchmark("SM_SemiAD_benchmark_times.csv", in_inset=True),
     AllocBenchmark("PE_benchmark_times_full_ad_cheby.csv"),
     AllocBenchmark("C_benchmark_times_full_ad_cheby.csv"),
     AllocBenchmark("SM_FullADcheby_benchmark_times.csv"),
     AllocBenchmark("PE_benchmark_times_full_ad.csv"),
     AllocBenchmark("C_benchmark_times_full_ad.csv"),
     AllocBenchmark("SM_FullAD_benchmark_times.csv"),
+    AllocBenchmark("SM_benchmark_times.csv", in_inset=True),
     outfile="PE_allocated_times.pdf",
     inset_pos=[0.1, 0.62, 0.35, 0.35]
 )
@@ -363,67 +375,71 @@ plot_comparison(
 
 def plot_combined_PE(outfile):
 
-    fig = plt.figure(wide=True, aspect_ratio=0.5, width_ratio=.95)
+    fig = plt.figure(wide=True, aspect_ratio=0.5, width_ratio=1.0)
     axs = fig.subplots(nrows=2, ncols=2, sharex="col", sharey="row")
 
     a = plot_comparison(
         RuntimeBenchmark("PE_benchmark_levels.csv", in_inset=True),
         RuntimeBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
-        RuntimeBenchmark("SM_benchmark_levels.csv", in_inset=True),
+        RuntimeBenchmark("SM_SemiAD_benchmark_levels.csv", in_inset=True),
         RuntimeBenchmark("PE_benchmark_levels_full_ad_cheby.csv", in_inset=True),
         RuntimeBenchmark("C_benchmark_levels_full_ad_cheby.csv", in_inset=True),
         RuntimeBenchmark("SM_FullADcheby_benchmark_levels.csv", in_inset=True),
         RuntimeBenchmark("PE_benchmark_levels_full_ad.csv"),
         RuntimeBenchmark("C_benchmark_levels_full_ad.csv"),
         RuntimeBenchmark("SM_FullAD_benchmark_levels.csv"),
+        RuntimeBenchmark("SM_benchmark_levels.csv", in_inset=True),
         inset_pos=[0.55, 0.35, 0.4, 0.6],
         legend=False,
         ax=axs[0, 0],
         xlabel=""
     )
-    
+
     plot_comparison(
         RuntimeBenchmark("PE_benchmark_times.csv", in_inset=True),
         RuntimeBenchmark("C_benchmark_times_semi_ad.csv", in_inset=True),
-        RuntimeBenchmark("SM_benchmark_times.csv", in_inset=True),
+        RuntimeBenchmark("SM_SemiAD_benchmark_times.csv", in_inset=True),
         RuntimeBenchmark("PE_benchmark_times_full_ad_cheby.csv", in_inset=True),
         RuntimeBenchmark("C_benchmark_times_full_ad_cheby.csv", in_inset=True),
         RuntimeBenchmark("SM_FullADcheby_benchmark_times.csv", in_inset=True),
         RuntimeBenchmark("PE_benchmark_times_full_ad.csv"),
         RuntimeBenchmark("C_benchmark_times_full_ad.csv"),
         RuntimeBenchmark("SM_FullAD_benchmark_times.csv"),
+        RuntimeBenchmark("SM_benchmark_times.csv", in_inset=True),
         inset_pos=[0.1, 0.6, 0.35, 0.35],
         legend=False,
         ax=axs[0, 1],
         ylabel="",
         xlabel=""
     )
-    
+
     plot_comparison(
         RSSBenchmark("PE_benchmark_levels.csv", in_inset=True),
         RSSBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
-        RSSBenchmark("SM_benchmark_levels.csv", in_inset=True),
+        RSSBenchmark("SM_SemiAD_benchmark_levels.csv", in_inset=True),
         RSSBenchmark("PE_benchmark_levels_full_ad_cheby.csv"),
         RSSBenchmark("C_benchmark_levels_full_ad_cheby.csv"),
         RSSBenchmark("SM_FullADcheby_benchmark_levels.csv"),
         RSSBenchmark("PE_benchmark_levels_full_ad.csv"),
         RSSBenchmark("C_benchmark_levels_full_ad.csv"),
         RSSBenchmark("SM_FullAD_benchmark_levels.csv"),
+        RSSBenchmark("SM_benchmark_levels.csv", in_inset=True),
         inset_pos=[0.12, 0.62, 0.35, 0.35],
         legend=False,
         ax=axs[1, 0],
     )
-    
+
     plot_comparison(
         RSSBenchmark("PE_benchmark_times.csv", in_inset=True),
         RSSBenchmark("C_benchmark_times_semi_ad.csv", in_inset=True),
-        RSSBenchmark("SM_benchmark_times.csv", in_inset=True),
+        RSSBenchmark("SM_SemiAD_benchmark_times.csv", in_inset=True),
         RSSBenchmark("PE_benchmark_times_full_ad_cheby.csv"),
         RSSBenchmark("C_benchmark_times_full_ad_cheby.csv"),
         RSSBenchmark("SM_FullADcheby_benchmark_times.csv"),
         RSSBenchmark("PE_benchmark_times_full_ad.csv"),
         RSSBenchmark("C_benchmark_times_full_ad.csv"),
         RSSBenchmark("SM_FullAD_benchmark_times.csv"),
+        RSSBenchmark("SM_benchmark_times.csv", in_inset=True),
         inset_pos=[0.12, 0.62, 0.35, 0.35],
         legend=False,
         ax=axs[1, 1],
@@ -432,15 +448,23 @@ def plot_combined_PE(outfile):
 
     # https://stackoverflow.com/questions/9834452
     lines, labels = axs[0, 0].get_legend_handles_labels()
-    permute = itemgetter(0, 3, 6, 
-                         1, 4, 7, 
+    permute = itemgetter(0, 3, 6,
+                         1, 4, 7,
                          2, 5, 8)
-    fig.legend(
+    l1 = fig.legend(
         permute(lines),
         permute(labels),
         ncol=3,
-        loc="upper center",
-        bbox_to_anchor=(0, 1, 1, 0.22),
+        loc="upper right",
+        bbox_to_anchor=(0, 1, 1, 0.265),
+        frameon=False,
+    )
+    l2 = fig.legend(
+        [lines[9]],
+        [labels[9]],
+        ncol=3,
+        loc="upper right",
+        bbox_to_anchor=(0, 1, 0.975, 0.08),
         frameon=False,
     )
 
