@@ -190,9 +190,9 @@ def benchmark_times_alloc(cmd):
     method = get_option(cmd, "--method", "grape")
     filename = "%s_%s_levels=%d_T=%d.jld2" % (method, functional, levels, T)
     file = Path("data", "benchmarks", filename)
+    log_file = file.with_suffix(".log")
     if not file.is_file():
         try:
-            log_file = file.with_suffix(".log")
             print("RUN:", " ".join(cmd), ">", log_file, file=sys.stderr)
             with open(log_file, "wb", buffering=0) as proc_log:
                 run(cmd, stderr=STDOUT, stdout=proc_log)
@@ -201,6 +201,9 @@ def benchmark_times_alloc(cmd):
             print(
                 "ERROR for %s: %s" % (" ".join(cmd), exc_info), file=sys.stderr
             )
+            return np.NaN, np.NaN
+    if log_file.is_file():
+        if "Instability detected. Aborting" in log_file.read_text():
             return np.NaN, np.NaN
     try:
         data = h5py.File(file, "r")
@@ -222,12 +225,12 @@ def benchmark_mem(cmd, baseline_mb=0):
 
 def _benchmark_mem(cmd, filename, baseline_mb=0):
     file = Path("data", "benchmarks", filename)
+    log_file = file.with_suffix(".log")
     if not file.is_file():
         try:
             measurements = [float(baseline_mb)]
             t_start = time.time()
             for i in range(20):
-                log_file = file.with_suffix(".log")
                 print("RUN:", " ".join(cmd), ">", log_file, file=sys.stderr)
                 with open(log_file, "wb", buffering=0) as proc_log:
                     process = psutil.Popen(cmd, stderr=STDOUT, stdout=proc_log)
@@ -248,6 +251,9 @@ def _benchmark_mem(cmd, filename, baseline_mb=0):
             print(
                 "ERROR for %s: %s" % (" ".join(cmd), exc_info), file=sys.stderr
             )
+            return baseline_mb, np.NaN
+    if log_file.is_file():
+        if "Instability detected. Aborting" in log_file.read_text():
             return baseline_mb, np.NaN
     try:
         measurements = np.loadtxt(file)
