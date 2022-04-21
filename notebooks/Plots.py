@@ -6,11 +6,11 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.6
+#       jupytext_version: 1.13.7
 #   kernelspec:
-#     display_name: SemiAD Paper
+#     display_name: Python 3
 #     language: python
-#     name: semi-ad-paper
+#     name: python3
 # ---
 
 # # Plots
@@ -26,6 +26,7 @@ get_cmap("tab20c")
 # TODO: consider tab20b as well
 # https://matplotlib.org/stable/gallery/color/colormap_reference.html
 
+# +
 def color(name, index):
     offset = {
         "blue": 0,
@@ -36,6 +37,52 @@ def color(name, index):
     }
     assert 1 <= index <= 4
     return get_cmap("tab20c").colors[offset[name] + index - 1]
+
+my_colors = {
+    ("blue", 1): "#53287e",
+    ("blue", 2): "#a17ebd",
+    ("blue", 3): "#f0dbff",
+}
+# -
+
+default_colors = {
+    ("PE", "Semi-AD (Cheby)"): color("blue", 1),
+    ("C", "Semi-AD (Cheby)"): color("blue", 2),
+    ("SM", "Semi-AD (Cheby)"): color("blue", 3),
+    ("PE", "Full-AD (Cheby)"): color("red", 1),
+    ("C", "Full-AD (Cheby)"): color("red", 2),
+    ("SM", "Full-AD (Cheby)"): color("red", 3),
+    ("PE", "Full-AD (ODE)"): color("green", 1),
+    ("C", "Full-AD (ODE)"): color("green", 2),
+    ("SM", "Full-AD (ODE)"): color("green", 3),
+}
+
+MARKER = {
+    "fullcircle": dict(marker="o", markersize=3),
+    "fullsquare": dict(marker="s", markersize=3),
+    "fullstar": dict(marker="*", markersize=3),
+    "fulldiamond": dict(marker="D", markersize=3),
+    "halfcircle": dict(marker="o", fillstyle="top", markersize=5),
+    "halfsquare": dict(marker="s", fillstyle="top", markersize=5),
+    "halfstar": dict(marker="*", fillstyle="top", markersize=5),
+    "halfdiamond": dict(marker="D", fillstyle="top", markersize=5),
+    "emptycircle": dict(marker="o", fillstyle="none", markersize=5),
+    "emptysquare": dict(marker="s", fillstyle="none", markersize=5),
+    "emptystar": dict(marker="*", fillstyle="none", markersize=5),
+    "emptydiamond": dict(marker="D", fillstyle="none", markersize=5),
+}
+
+default_markers = {
+    ("PE", "Semi-AD (Cheby)"): MARKER["fullcircle"],
+    ("C", "Semi-AD (Cheby)"): MARKER["halfcircle"],
+    ("SM", "Semi-AD (Cheby)"): MARKER["emptycircle"],
+    ("PE", "Full-AD (Cheby)"): MARKER["fullsquare"],
+    ("C", "Full-AD (Cheby)"): MARKER["halfsquare"],
+    ("SM", "Full-AD (Cheby)"): MARKER["emptysquare"],
+    ("PE", "Full-AD (ODE)"): MARKER["fulldiamond"],
+    ("C", "Full-AD (ODE)"): MARKER["halfdiamond"],
+    ("SM", "Full-AD (ODE)"): MARKER["emptydiamond"],
+}
 
 
 def projectdir(*args, relpath=True):
@@ -50,8 +97,7 @@ def projectdir(*args, relpath=True):
         return root.joinpath(*args).resolve()
 
 
-plt = rsmf.setup(projectdir("data", "plots", "quantum-template.tex"))
-COLORS = ["#1f77b4", "#ff7f0e", "#2ca02c", "#7EC4F9", "#FFB97A", "#6EEF6E"] # TODO remove
+plt = rsmf.setup(r"\documentclass[aps,pra,letterpaper,allowtoday,onecolumn,unpublished]{quantumarticle}")
 
 OUTDIR = projectdir("data", "plots")
 OUTDIR.mkdir(parents=True, exist_ok=True)
@@ -64,7 +110,7 @@ class Benchmark:
         self,
         filename,
         column_name,
-        color,
+        color=None,
         method=None,
         functional=None,
         in_inset=False,
@@ -91,7 +137,11 @@ class Benchmark:
         if label is None:
             label = f"{method} ({functional})"
         self.label = label
+        if color is None:
+            color = default_colors[(self.functional, self.method)]
         self.color = color
+        if marker is None:
+            marker = default_markers[(self.functional, self.method)]
         marker_style = {}
         if isinstance(marker, str):
             marker_style = dict(marker=marker)
@@ -100,7 +150,48 @@ class Benchmark:
         self.marker_style = marker_style
         print("loading", BENCHMARKS / filename)
         df = pd.read_csv(BENCHMARKS / filename, index_col=0)
-        self.data = df[column_name].dropna()
+        self.column_name = column_name
+        self.index_name = df.index.name
+        self.data = df[self.column_name].dropna()
+
+
+class RuntimeBenchmark(Benchmark):
+    def __init__(
+        self,
+        filename,
+        in_inset=False
+    ):
+        super().__init__(
+            filename,
+            "nanosec_per_fg",
+            in_inset=in_inset
+        )
+
+
+class RSSBenchmark(Benchmark):
+    def __init__(
+        self,
+        filename,
+        in_inset=False
+    ):
+        super().__init__(
+            filename,
+            "rss_memory_MB",
+            in_inset=in_inset
+        )
+
+
+class AllocBenchmark(Benchmark):
+    def __init__(
+        self,
+        filename,
+        in_inset=False
+    ):
+        super().__init__(
+            filename,
+            "alloc_memory_MB",
+            in_inset=in_inset
+        )
 
 
 def plot_comparison(
@@ -113,8 +204,7 @@ def plot_comparison(
     outfile=None,
     inset=False,
     legend=True,
-    inset_pos=[0.55, 0.55, 0.4, 0.4],
-    inset_index=[0, 1],
+    inset_pos=[0.55, 0.55, 0.4, 0.4]
 ):
 
     fig = None
@@ -122,6 +212,9 @@ def plot_comparison(
         fig = plt.figure(aspect_ratio=0.5, wide=legend)
         ax = fig.add_subplot()
     ax.grid(color="gray", alpha=0.25)
+
+    if benchmarks[0].column_name == "nanosec_per_fg":
+        factor = 1e-9
 
     for benchmark in benchmarks:
         ax.plot(
@@ -142,10 +235,20 @@ def plot_comparison(
         )
     if xlabel is not None:
         ax.set_xlabel(xlabel)
+    elif benchmarks[0].index_name == "levels":
+        ax.set_xlabel("number of transmon levels")
+    elif benchmarks[0].index_name == "T":
+        ax.set_xlabel("gate duration")
     if ylabel is not None:
         ax.set_ylabel(ylabel)
+    elif benchmarks[0].column_name == "nanosec_per_fg":
+        ax.set_ylabel("runtime (s)")
+    elif benchmarks[0].column_name == "rss_memory_MB":
+        ax.set_ylabel("memory (MB)")
+    elif benchmarks[0].column_name == "alloc_memory_MB":
+        ax.set_ylabel("allocated memory (MB)")
 
-    if inset:
+    if True in [benchmark.in_inset for benchmark in benchmarks]:
         axins = ax.inset_axes(inset_pos)
         for benchmark in benchmarks:
             if benchmark.in_inset:
@@ -166,349 +269,93 @@ def plot_comparison(
         return fig
 
 
-# TODO: remove
-level_files_PE = [
-    "PE_benchmark_levels.csv",
-    "PE_benchmark_levels_full_ad_cheby.csv",
-    "PE_benchmark_levels_full_ad.csv",
-]
-time_files_PE = [
-    "PE_benchmark_times.csv",
-    "PE_benchmark_times_full_ad_cheby.csv",
-    "PE_benchmark_times_full_ad.csv",
-]
-level_files_SM = [
-    "SM_benchmark_levels.csv",
-    "SM_FullADcheby_benchmark_levels.csv",
-    "SM_FullAD_benchmark_levels.csv",
-]
-time_files_SM = [
-    "SM_benchmark_times.csv",
-    "SM_FullADcheby_benchmark_times.csv",
-    "SM_FullAD_benchmark_times.csv",
-]
-level_files_C = [
-    "C_benchmark_levels_semi_ad.csv",
-    "C_benchmark_levels_full_ad_cheby.csv",
-    "C_benchmark_levels_full_ad.csv",
-]
-time_files_C = [
-    "C_benchmark_times_semi_ad.csv",
-    "C_benchmark_times_full_ad_cheby.csv",
-    "C_benchmark_times_full_ad.csv",
-]
-methods = ["Semi-AD", "Chebyshev", "ODE"]
-
-MARKER = {
-    "fullcircle": dict(marker="o", markersize=3),
-    "fullsquare": dict(marker="s", markersize=3),
-    "fullstar": dict(marker="*", markersize=3),
-    "fulldiamond": dict(marker="D", markersize=3),
-    "halfcircle": dict(marker="o", fillstyle="top", markersize=5),
-    "halfsquare": dict(marker="s", fillstyle="top", markersize=5),
-    "halfstar": dict(marker="*", fillstyle="top", markersize=5),
-    "halfdiamond": dict(marker="D", fillstyle="top", markersize=5),
-    "emptycircle": dict(marker="o", fillstyle="none", markersize=5),
-    "emptysquare": dict(marker="s", fillstyle="none", markersize=5),
-    "emptystar": dict(marker="*", fillstyle="none", markersize=5),
-    "emptydiamond": dict(marker="D", fillstyle="none", markersize=5),
-}
-
 # ## Runtime
 
 plot_comparison(
-    Benchmark(
-        "PE_benchmark_levels.csv",
-        "nanosec_per_fg",
-        in_inset=True,
-        color=color("blue", 1),
-        marker=MARKER["fullcircle"],
-    ),
-    Benchmark(
-        "C_benchmark_levels_semi_ad.csv",
-        "nanosec_per_fg",
-        in_inset=True,
-        color=color("blue", 2),
-        marker=MARKER["halfcircle"],
-    ),
-    Benchmark(
-        "SM_benchmark_levels.csv",
-        "nanosec_per_fg",
-        in_inset=True,
-        color=color("blue", 3),
-        marker=MARKER["emptycircle"],
-    ),
-    Benchmark(
-        "PE_benchmark_levels_full_ad_cheby.csv",
-        "nanosec_per_fg",
-        in_inset=True,
-        color=color("red", 1),
-        marker=MARKER["fullsquare"],
-    ),
-    Benchmark(
-        "C_benchmark_levels_full_ad_cheby.csv",
-        "nanosec_per_fg",
-        in_inset=True,
-        color=color("red", 2),
-        marker=MARKER["halfsquare"],
-    ),
-    Benchmark(
-        "SM_FullADcheby_benchmark_levels.csv",
-        "nanosec_per_fg",
-        in_inset=True,
-        color=color("red", 3),
-        marker=MARKER["emptysquare"],
-    ),
-    Benchmark(
-        "PE_benchmark_levels_full_ad.csv",
-        "nanosec_per_fg",
-        color=color("green", 1),
-        marker=MARKER["fulldiamond"],
-    ),
-    Benchmark(
-        "C_benchmark_levels_full_ad.csv",
-        "nanosec_per_fg",
-        color=color("green", 2),
-        marker=MARKER["halfdiamond"],
-    ),
-    Benchmark(
-        "SM_FullAD_benchmark_levels.csv",
-        "nanosec_per_fg",
-        in_inset=False,
-        color=color("green", 3),
-        marker=MARKER["emptydiamond"],
-    ),
-    logscale=False,
-    ylabel="runtime (s)",
-    xlabel="number of transmon levels",
-    factor=1e-9,
+    RuntimeBenchmark("PE_benchmark_levels.csv", in_inset=True),
+    RuntimeBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
+    RuntimeBenchmark("SM_benchmark_levels.csv", in_inset=True),
+    RuntimeBenchmark("PE_benchmark_levels_full_ad_cheby.csv", in_inset=True),
+    RuntimeBenchmark("C_benchmark_levels_full_ad_cheby.csv", in_inset=True),
+    RuntimeBenchmark("SM_FullADcheby_benchmark_levels.csv", in_inset=True),
+    RuntimeBenchmark("PE_benchmark_levels_full_ad.csv"),
+    RuntimeBenchmark("C_benchmark_levels_full_ad.csv"),
+    RuntimeBenchmark("SM_FullAD_benchmark_levels.csv"),
     outfile="PE_runtimes_levels.pdf",
-    inset=True,
 )
 
 plot_comparison(
-    time_files_PE,
-    time_files_C,
-    methods,
-    ["PE", "C"],
-    index=1,
-    logscale=False,
-    ylabel="runtime (s)",
-    xlabel="gate duration",
-    factor=1e-9,
+    RuntimeBenchmark("PE_benchmark_times.csv", in_inset=True),
+    RuntimeBenchmark("C_benchmark_times_semi_ad.csv", in_inset=True),
+    RuntimeBenchmark("SM_benchmark_times.csv", in_inset=True),
+    RuntimeBenchmark("PE_benchmark_times_full_ad_cheby.csv", in_inset=True),
+    RuntimeBenchmark("C_benchmark_times_full_ad_cheby.csv", in_inset=True),
+    RuntimeBenchmark("SM_FullADcheby_benchmark_times.csv", in_inset=True),
+    RuntimeBenchmark("PE_benchmark_times_full_ad.csv"),
+    RuntimeBenchmark("C_benchmark_times_full_ad.csv"),
+    RuntimeBenchmark("SM_FullAD_benchmark_times.csv"),
     outfile="PE_runtimes_times.pdf",
-    inset=True,
-    inset_pos=[0.1, 0.55, 0.35, 0.35],
-)
-
-plot_comparison(
-    ["C_benchmark_levels_semi_ad.csv"],
-    ["C_U_benchmark_levels_semi_ad.csv"],
-    methods,
-    ["C", "C_U"],
-    index=1,
-    logscale=False,
-    ylabel="runtime (s)",
-    xlabel="number of transmon levels",
-    outfile="C_U_runtime_levels.pdf",
-)
-
-plot_comparison(
-    ["C_benchmark_times_semi_ad.csv"],
-    ["C_U_benchmark_times_semi_ad.csv"],
-    methods,
-    ["C", "C_U"],
-    index=1,
-    logscale=False,
-    ylabel="runtime (s)",
-    xlabel="gate duration",
-    outfile="C_U_runtime_times.pdf",
-)
-
-plot_comparison(
-    ["PE_benchmark_levels.csv"],
-    ["PE_U_benchmark_levels_semi_ad.csv"],
-    methods,
-    ["PE", "PE_U"],
-    index=1,
-    logscale=False,
-    ylabel="runtime (s)",
-    xlabel="number of transmon levels",
-    outfile="PE_U_runtime_levels.pdf",
-)
-
-plot_comparison(
-    ["PE_benchmark_times.csv"],
-    ["PE_U_benchmark_times_semi_ad.csv"],
-    methods,
-    ["PE", "PE_U"],
-    index=1,
-    logscale=False,
-    ylabel="runtime (s)",
-    xlabel="gate duration",
-    outfile="PE_U_runtime_times.pdf.pdf",
+    inset_pos=[0.1, 0.6, 0.35, 0.35]
 )
 
 # ## RSS
 
 plot_comparison(
-    level_files_PE,
-    level_files_C,
-    methods,
-    ["PE", "C"],
-    index=3,
-    logscale=False,
-    ylabel="memory (MB)",
-    xlabel="number of transmon levels",
+    RSSBenchmark("PE_benchmark_levels.csv", in_inset=True),
+    RSSBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
+    RSSBenchmark("SM_benchmark_levels.csv", in_inset=True),
+    RSSBenchmark("PE_benchmark_levels_full_ad_cheby.csv"),
+    RSSBenchmark("C_benchmark_levels_full_ad_cheby.csv"),
+    RSSBenchmark("SM_FullADcheby_benchmark_levels.csv"),
+    RSSBenchmark("PE_benchmark_levels_full_ad.csv"),
+    RSSBenchmark("C_benchmark_levels_full_ad.csv"),
+    RSSBenchmark("SM_FullAD_benchmark_levels.csv"),
     outfile="PE_memory_levels.pdf",
-    inset=True,
-    inset_pos=[0.12, 0.65, 0.35, 0.3],
-    inset_index=[0],
+    inset_pos=[0.1, 0.6, 0.35, 0.35]
 )
 
 plot_comparison(
-    time_files_PE,
-    time_files_C,
-    methods,
-    ["PE", "C"],
-    index=3,
-    logscale=False,
-    ylabel="memory (MB)",
-    xlabel="gate duration",
+    RSSBenchmark("PE_benchmark_times.csv", in_inset=True),
+    RSSBenchmark("C_benchmark_times_semi_ad.csv", in_inset=True),
+    RSSBenchmark("SM_benchmark_times.csv", in_inset=True),
+    RSSBenchmark("PE_benchmark_times_full_ad_cheby.csv"),
+    RSSBenchmark("C_benchmark_times_full_ad_cheby.csv"),
+    RSSBenchmark("SM_FullADcheby_benchmark_times.csv"),
+    RSSBenchmark("PE_benchmark_times_full_ad.csv"),
+    RSSBenchmark("C_benchmark_times_full_ad.csv"),
+    RSSBenchmark("SM_FullAD_benchmark_times.csv"),
     outfile="PE_memory_times.pdf",
-    inset=True,
-    inset_index=[0],
-    inset_pos=[0.12, 0.63, 0.35, 0.3],
-)
-
-plot_comparison(
-    ["C_benchmark_levels_semi_ad.csv"],
-    ["C_U_benchmark_levels_semi_ad.csv"],
-    methods,
-    ["C", "C_U"],
-    index=3,
-    logscale=False,
-    ylabel="memory (MB)",
-    xlabel="number of transmon levels",
-    outfile="C_U_memory_levels.pdf",
-)
-
-plot_comparison(
-    ["C_benchmark_times_semi_ad.csv"],
-    ["C_U_benchmark_times_semi_ad.csv"],
-    methods,
-    ["C", "C_U"],
-    index=3,
-    logscale=False,
-    ylabel="memory (MB)",
-    xlabel="gate duration",
-    outfile="C_U_memory_times.pdf",
-)
-
-plot_comparison(
-    ["PE_benchmark_levels.csv"],
-    ["PE_U_benchmark_levels_semi_ad.csv"],
-    methods,
-    ["PE", "PE_U"],
-    index=3,
-    logscale=False,
-    ylabel="memory (MB)",
-    xlabel="number of transmon levels",
-    outfile="PE_U_memory_levels.pdf",
-)
-
-plot_comparison(
-    ["PE_benchmark_times.csv"],
-    ["PE_U_benchmark_times_semi_ad.csv"],
-    methods,
-    ["PE", "PE_U"],
-    index=3,
-    logscale=False,
-    ylabel="memory (MB)",
-    xlabel="gate duration",
-    outfile="PE_U_memory_times.pdf",
+    inset_pos=[0.1, 0.62, 0.35, 0.35]
 )
 
 # ## Allocations
 
 plot_comparison(
-    level_files_PE,
-    level_files_C,
-    methods,
-    ["PE", "C"],
-    index=2,
-    logscale=False,
-    ylabel="allocated memory (TB)",
-    xlabel="number of transmon levels",
+    AllocBenchmark("PE_benchmark_levels.csv", in_inset=True),
+    AllocBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
+    AllocBenchmark("SM_benchmark_levels.csv", in_inset=True),
+    AllocBenchmark("PE_benchmark_levels_full_ad_cheby.csv"),
+    AllocBenchmark("C_benchmark_levels_full_ad_cheby.csv"),
+    AllocBenchmark("SM_FullADcheby_benchmark_levels.csv"),
+    AllocBenchmark("PE_benchmark_levels_full_ad.csv"),
+    AllocBenchmark("C_benchmark_levels_full_ad.csv"),
+    AllocBenchmark("SM_FullAD_benchmark_levels.csv"),
     outfile="PE_allocated_levels.pdf",
-    factor=1e-6,
-    inset=True,
-    inset_pos=[0.5, 0.65, 0.35, 0.3],
-    inset_index=[0],
+    inset_pos=[0.5, 0.6, 0.35, 0.35]
 )
 
 plot_comparison(
-    time_files_PE,
-    time_files_C,
-    methods,
-    ["PE", "C"],
-    index=2,
-    logscale=False,
-    ylabel="allocated memory (TB)",
-    factor=1e-6,
-    xlabel="gate duration",
+    AllocBenchmark("PE_benchmark_times.csv", in_inset=True),
+    AllocBenchmark("C_benchmark_times_semi_ad.csv", in_inset=True),
+    AllocBenchmark("SM_benchmark_times.csv", in_inset=True),
+    AllocBenchmark("PE_benchmark_times_full_ad_cheby.csv"),
+    AllocBenchmark("C_benchmark_times_full_ad_cheby.csv"),
+    AllocBenchmark("SM_FullADcheby_benchmark_times.csv"),
+    AllocBenchmark("PE_benchmark_times_full_ad.csv"),
+    AllocBenchmark("C_benchmark_times_full_ad.csv"),
+    AllocBenchmark("SM_FullAD_benchmark_times.csv"),
     outfile="PE_allocated_times.pdf",
-    inset=True,
-    inset_index=[0],
-    inset_pos=[0.18, 0.63, 0.35, 0.3],
-)
-
-plot_comparison(
-    ["C_benchmark_levels_semi_ad.csv"],
-    ["C_U_benchmark_levels_semi_ad.csv"],
-    methods,
-    ["C", "C_U"],
-    index=2,
-    logscale=False,
-    ylabel="allocated memory (MB)",
-    xlabel="number of transmon levels",
-    outfile="C_U_allocated_levels.pdf",
-)
-
-plot_comparison(
-    ["C_benchmark_times_semi_ad.csv"],
-    ["C_U_benchmark_times_semi_ad.csv"],
-    methods,
-    ["C", "C_U"],
-    index=2,
-    logscale=False,
-    ylabel="allocated memory (MB)",
-    xlabel="gate duration",
-    outfile="C_U_allocated_times.pdf",
-)
-
-plot_comparison(
-    ["PE_benchmark_levels.csv"],
-    ["PE_U_benchmark_levels_semi_ad.csv"],
-    methods,
-    ["PE", "PE_U"],
-    index=2,
-    logscale=False,
-    ylabel="allocated memory (MB)",
-    xlabel="number of transmon levels",
-    outfile="PE_U_allocated_levels.pdf",
-)
-
-plot_comparison(
-    ["PE_benchmark_times.csv"],
-    ["PE_U_benchmark_times_semi_ad.csv"],
-    methods,
-    ["PE", "PE_U"],
-    index=2,
-    logscale=False,
-    ylabel="allocated memory (MB)",
-    xlabel="gate duration",
-    outfile="PE_U_allocated_times.pdf",
+    inset_pos=[0.1, 0.62, 0.35, 0.35]
 )
 
 # ## Combined Plots
@@ -516,81 +363,84 @@ plot_comparison(
 
 def plot_combined_PE(outfile):
 
-    fig = plt.figure(wide=True, aspect_ratio=0.5)
+    fig = plt.figure(wide=True, aspect_ratio=0.5, width_ratio=.95)
     axs = fig.subplots(nrows=2, ncols=2, sharex="col", sharey="row")
 
-    plot_comparison(
-        level_files_PE,
-        level_files_C,
-        methods,
-        ["PE", "C"],
-        index=1,
-        logscale=False,
-        ylabel="runtime (s)",
-        factor=1e-9,
-        outfile="PE_runtimes_levels.pdf",
-        inset=True,
+    a = plot_comparison(
+        RuntimeBenchmark("PE_benchmark_levels.csv", in_inset=True),
+        RuntimeBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
+        RuntimeBenchmark("SM_benchmark_levels.csv", in_inset=True),
+        RuntimeBenchmark("PE_benchmark_levels_full_ad_cheby.csv", in_inset=True),
+        RuntimeBenchmark("C_benchmark_levels_full_ad_cheby.csv", in_inset=True),
+        RuntimeBenchmark("SM_FullADcheby_benchmark_levels.csv", in_inset=True),
+        RuntimeBenchmark("PE_benchmark_levels_full_ad.csv"),
+        RuntimeBenchmark("C_benchmark_levels_full_ad.csv"),
+        RuntimeBenchmark("SM_FullAD_benchmark_levels.csv"),
+        inset_pos=[0.55, 0.35, 0.4, 0.6],
+        legend=False,
         ax=axs[0, 0],
-        legend=False,
+        xlabel=""
     )
-
+    
     plot_comparison(
-        time_files_PE,
-        time_files_C,
-        methods,
-        ["PE", "C"],
-        index=1,
-        logscale=False,
-        factor=1e-9,
-        outfile="PE_runtimes_times.pdf",
-        inset=True,
-        inset_pos=[0.1, 0.55, 0.35, 0.35],
+        RuntimeBenchmark("PE_benchmark_times.csv", in_inset=True),
+        RuntimeBenchmark("C_benchmark_times_semi_ad.csv", in_inset=True),
+        RuntimeBenchmark("SM_benchmark_times.csv", in_inset=True),
+        RuntimeBenchmark("PE_benchmark_times_full_ad_cheby.csv", in_inset=True),
+        RuntimeBenchmark("C_benchmark_times_full_ad_cheby.csv", in_inset=True),
+        RuntimeBenchmark("SM_FullADcheby_benchmark_times.csv", in_inset=True),
+        RuntimeBenchmark("PE_benchmark_times_full_ad.csv"),
+        RuntimeBenchmark("C_benchmark_times_full_ad.csv"),
+        RuntimeBenchmark("SM_FullAD_benchmark_times.csv"),
+        inset_pos=[0.1, 0.6, 0.35, 0.35],
+        legend=False,
         ax=axs[0, 1],
-        legend=False,
+        ylabel="",
+        xlabel=""
     )
-
+    
     plot_comparison(
-        level_files_PE,
-        level_files_C,
-        methods,
-        ["PE", "C"],
-        index=3,
-        logscale=False,
-        ylabel="memory (MB)",
-        xlabel="number of transmon levels",
-        outfile="PE_memory_levels.pdf",
-        inset=True,
-        inset_pos=[0.12, 0.65, 0.35, 0.3],
-        inset_index=[0],
+        RSSBenchmark("PE_benchmark_levels.csv", in_inset=True),
+        RSSBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
+        RSSBenchmark("SM_benchmark_levels.csv", in_inset=True),
+        RSSBenchmark("PE_benchmark_levels_full_ad_cheby.csv"),
+        RSSBenchmark("C_benchmark_levels_full_ad_cheby.csv"),
+        RSSBenchmark("SM_FullADcheby_benchmark_levels.csv"),
+        RSSBenchmark("PE_benchmark_levels_full_ad.csv"),
+        RSSBenchmark("C_benchmark_levels_full_ad.csv"),
+        RSSBenchmark("SM_FullAD_benchmark_levels.csv"),
+        inset_pos=[0.12, 0.62, 0.35, 0.35],
+        legend=False,
         ax=axs[1, 0],
-        legend=False,
     )
-
+    
     plot_comparison(
-        time_files_PE,
-        time_files_C,
-        methods,
-        ["PE", "C"],
-        index=3,
-        logscale=False,
-        xlabel="gate duration",
-        outfile="PE_memory_times.pdf",
-        inset=True,
-        inset_index=[0],
-        inset_pos=[0.12, 0.63, 0.35, 0.3],
-        ax=axs[1, 1],
+        RSSBenchmark("PE_benchmark_times.csv", in_inset=True),
+        RSSBenchmark("C_benchmark_times_semi_ad.csv", in_inset=True),
+        RSSBenchmark("SM_benchmark_times.csv", in_inset=True),
+        RSSBenchmark("PE_benchmark_times_full_ad_cheby.csv"),
+        RSSBenchmark("C_benchmark_times_full_ad_cheby.csv"),
+        RSSBenchmark("SM_FullADcheby_benchmark_times.csv"),
+        RSSBenchmark("PE_benchmark_times_full_ad.csv"),
+        RSSBenchmark("C_benchmark_times_full_ad.csv"),
+        RSSBenchmark("SM_FullAD_benchmark_times.csv"),
+        inset_pos=[0.12, 0.62, 0.35, 0.35],
         legend=False,
+        ax=axs[1, 1],
+        ylabel=""
     )
 
     # https://stackoverflow.com/questions/9834452
     lines, labels = axs[0, 0].get_legend_handles_labels()
-    permute = itemgetter(0, 3, 1, 4, 2, 5)
+    permute = itemgetter(0, 3, 6, 
+                         1, 4, 7, 
+                         2, 5, 8)
     fig.legend(
         permute(lines),
         permute(labels),
         ncol=3,
         loc="upper center",
-        bbox_to_anchor=(0, 1, 1, 0.15),
+        bbox_to_anchor=(0, 1, 1, 0.22),
         frameon=False,
     )
 
@@ -602,3 +452,5 @@ def plot_combined_PE(outfile):
 
 
 plot_combined_PE("combined_PE.pdf")
+
+
