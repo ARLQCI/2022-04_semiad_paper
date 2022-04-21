@@ -7,6 +7,7 @@ from datetime import datetime
 from functools import partial
 import time
 import sys
+import os
 import psutil
 import numpy as np
 import h5py
@@ -277,6 +278,8 @@ def assemble_cmds(base, spec):
 
 def main():
     num_cpus = len(psutil.Process().cpu_affinity())
+    if "NUM_THREADS" in os.environ:
+        num_cpus = int(os.environ["NUM_THREADS"])
     tasks_benchmark_times = []
     tasks_benchmark_mem = []
     logfile = Path("data", "benchmarks", "run_benchmarks.log")
