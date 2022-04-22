@@ -22,28 +22,25 @@ import pandas as pd
 
 from matplotlib.pylab import get_cmap
 
+get_cmap("tab20b")
+
 get_cmap("tab20c")
 # TODO: consider tab20b as well
 # https://matplotlib.org/stable/gallery/color/colormap_reference.html
 
-# +
 def color(name, index):
-    offset = {
-        "blue": 0,
-        "red": 4,
-        "green": 8,
-        "purple": 12,
-        "gray": 16,
+    loc = {
+        "blue": ("tab20b", 0),
+        "red": ("tab20b", 12),
+        "green": ("tab20b", 4),
+        "purple": ("tab20b", 16),
+        "yellow": ("tab20b", 8),
+        "gray": ("tab20c", 16),
     }
     assert 1 <= index <= 4
-    return get_cmap("tab20c").colors[offset[name] + index - 1]
+    cmap, offset = loc[name]
+    return get_cmap(cmap).colors[offset + index - 1]
 
-my_colors = {
-    ("blue", 1): "#53287e",
-    ("blue", 2): "#a17ebd",
-    ("blue", 3): "#f0dbff",
-}
-# -
 
 default_colors = {
     ("PE", "Semi-AD (Cheby)"): color("blue", 1),
@@ -375,7 +372,7 @@ plot_comparison(
 
 def plot_combined_PE(outfile):
 
-    fig = plt.figure(wide=True, aspect_ratio=0.5, width_ratio=1.0)
+    fig = plt.figure(wide=True, aspect_ratio=0.6, width_ratio=1.0)
     axs = fig.subplots(nrows=2, ncols=2, sharex="col", sharey="row")
 
     a = plot_comparison(
@@ -476,5 +473,3 @@ def plot_combined_PE(outfile):
 
 
 plot_combined_PE("combined_PE.pdf")
-
-
