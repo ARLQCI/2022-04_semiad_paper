@@ -21,12 +21,12 @@ import rsmf
 import pandas as pd
 
 from matplotlib.pylab import get_cmap
+from matplotlib import transforms
 
 get_cmap("tab20b")
 
 get_cmap("tab20c")
-# TODO: consider tab20b as well
-# https://matplotlib.org/stable/gallery/color/colormap_reference.html
+
 
 def color(name, index):
     loc = {
@@ -96,7 +96,9 @@ def projectdir(*args, relpath=True):
         return root.joinpath(*args).resolve()
 
 
-plt = rsmf.setup(r"\documentclass[aps,pra,letterpaper,allowtoday,onecolumn,unpublished]{quantumarticle}")
+plt = rsmf.setup(
+    r"\documentclass[aps,pra,letterpaper,allowtoday,onecolumn,unpublished]{quantumarticle}"
+)
 
 OUTDIR = projectdir("data", "plots")
 OUTDIR.mkdir(parents=True, exist_ok=True)
@@ -159,42 +161,18 @@ class Benchmark:
 
 
 class RuntimeBenchmark(Benchmark):
-    def __init__(
-        self,
-        filename,
-        in_inset=False
-    ):
-        super().__init__(
-            filename,
-            "nanosec_per_fg",
-            in_inset=in_inset
-        )
+    def __init__(self, filename, in_inset=False):
+        super().__init__(filename, "nanosec_per_fg", in_inset=in_inset)
 
 
 class RSSBenchmark(Benchmark):
-    def __init__(
-        self,
-        filename,
-        in_inset=False
-    ):
-        super().__init__(
-            filename,
-            "rss_memory_MB",
-            in_inset=in_inset
-        )
+    def __init__(self, filename, in_inset=False):
+        super().__init__(filename, "rss_memory_MB", in_inset=in_inset)
 
 
 class AllocBenchmark(Benchmark):
-    def __init__(
-        self,
-        filename,
-        in_inset=False
-    ):
-        super().__init__(
-            filename,
-            "alloc_memory_MB",
-            in_inset=in_inset
-        )
+    def __init__(self, filename, in_inset=False):
+        super().__init__(filename, "alloc_memory_MB", in_inset=in_inset)
 
 
 def plot_comparison(
@@ -207,7 +185,7 @@ def plot_comparison(
     outfile=None,
     inset=False,
     legend=True,
-    inset_pos=[0.55, 0.55, 0.4, 0.4]
+    inset_pos=[0.55, 0.55, 0.4, 0.4],
 ):
 
     fig = None
@@ -300,7 +278,7 @@ plot_comparison(
     RuntimeBenchmark("SM_FullAD_benchmark_times.csv"),
     RuntimeBenchmark("SM_benchmark_times.csv", in_inset=True),
     outfile="PE_runtimes_times.pdf",
-    inset_pos=[0.1, 0.6, 0.35, 0.35]
+    inset_pos=[0.1, 0.6, 0.35, 0.35],
 )
 
 # ## RSS
@@ -317,7 +295,7 @@ plot_comparison(
     RSSBenchmark("SM_FullAD_benchmark_levels.csv"),
     RSSBenchmark("SM_benchmark_levels.csv", in_inset=True),
     outfile="PE_memory_levels.pdf",
-    inset_pos=[0.1, 0.6, 0.35, 0.35]
+    inset_pos=[0.1, 0.6, 0.35, 0.35],
 )
 
 plot_comparison(
@@ -332,7 +310,7 @@ plot_comparison(
     RSSBenchmark("SM_FullAD_benchmark_times.csv"),
     RSSBenchmark("SM_benchmark_times.csv", in_inset=True),
     outfile="PE_memory_times.pdf",
-    inset_pos=[0.1, 0.62, 0.35, 0.35]
+    inset_pos=[0.1, 0.62, 0.35, 0.35],
 )
 
 # ## Allocations
@@ -349,7 +327,7 @@ plot_comparison(
     AllocBenchmark("SM_FullAD_benchmark_levels.csv"),
     AllocBenchmark("SM_benchmark_levels.csv", in_inset=True),
     outfile="PE_allocated_levels.pdf",
-    inset_pos=[0.5, 0.6, 0.35, 0.35]
+    inset_pos=[0.5, 0.6, 0.35, 0.35],
 )
 
 plot_comparison(
@@ -364,7 +342,7 @@ plot_comparison(
     AllocBenchmark("SM_FullAD_benchmark_times.csv"),
     AllocBenchmark("SM_benchmark_times.csv", in_inset=True),
     outfile="PE_allocated_times.pdf",
-    inset_pos=[0.1, 0.62, 0.35, 0.35]
+    inset_pos=[0.1, 0.62, 0.35, 0.35],
 )
 
 # ## Combined Plots
@@ -389,7 +367,7 @@ def plot_combined_PE(outfile):
         inset_pos=[0.55, 0.35, 0.4, 0.6],
         legend=False,
         ax=axs[0, 0],
-        xlabel=""
+        xlabel="",
     )
 
     plot_comparison(
@@ -407,7 +385,7 @@ def plot_combined_PE(outfile):
         legend=False,
         ax=axs[0, 1],
         ylabel="",
-        xlabel=""
+        xlabel="",
     )
 
     plot_comparison(
@@ -440,32 +418,50 @@ def plot_combined_PE(outfile):
         inset_pos=[0.12, 0.62, 0.35, 0.35],
         legend=False,
         ax=axs[1, 1],
-        ylabel=""
+        ylabel="",
     )
 
     # https://stackoverflow.com/questions/9834452
     lines, labels = axs[0, 0].get_legend_handles_labels()
-    permute = itemgetter(0, 3, 6,
-                         1, 4, 7,
-                         2, 5, 8)
+    permute = itemgetter(0, 3, 6, 1, 4, 7, 2, 5, 8)
+    l1_offset = transforms.ScaledTranslation(0.25, -4 / 72.0, fig.dpi_scale_trans)
     l1 = fig.legend(
         permute(lines),
         permute(labels),
         ncol=3,
-        loc="upper right",
-        bbox_to_anchor=(0, 1, 1, 0.265),
+        loc="lower center",
+        bbox_to_anchor=(0.5, 1),
+        bbox_transform=(fig.transFigure + l1_offset),
         frameon=False,
     )
+    l2_offset = transforms.ScaledTranslation(4.22, -18 / 72.0, fig.dpi_scale_trans)
     l2 = fig.legend(
         [lines[9]],
         [labels[9]],
         ncol=3,
-        loc="upper right",
-        bbox_to_anchor=(0, 1, 0.975, 0.08),
+        loc="lower left",
+        bbox_to_anchor=(0, 1),
+        bbox_transform=(fig.transFigure + l2_offset),
         frameon=False,
     )
 
-    fig.tight_layout(pad=0.25)
+    def axes_label(ax, label):
+        ax.annotate(
+            label,
+            (0, 1),
+            xycoords="axes fraction",
+            xytext=(0, 2),
+            textcoords="offset points",
+            verticalalignment="bottom",
+            horizontalalignment="left",
+        )
+
+    axes_label(axs[0, 0], "(a)")
+    axes_label(axs[0, 1], "(b)")
+    axes_label(axs[1, 0], "(c)")
+    axes_label(axs[1, 1], "(d)")
+
+    fig.tight_layout(pad=0.25, h_pad=0.5)
     fig.savefig(OUTDIR / outfile, bbox_inches="tight")
     print("Written %s" % (OUTDIR / outfile))
     print(fig.get_size_inches())
