@@ -219,13 +219,13 @@ def plot_comparison(
     elif benchmarks[0].index_name == "levels":
         ax.set_xlabel("number of transmon levels")
     elif benchmarks[0].index_name == "T":
-        ax.set_xlabel("gate duration")
+        ax.set_xlabel("gate duration (ns), number of time steps (10)")
     if ylabel is not None:
         ax.set_ylabel(ylabel)
     elif benchmarks[0].column_name == "nanosec_per_fg":
-        ax.set_ylabel("runtime (s)")
+        ax.set_ylabel("runtime per grad eval (s)")
     elif benchmarks[0].column_name == "rss_memory_MB":
-        ax.set_ylabel("memory (MB)")
+        ax.set_ylabel("RSS peak memory (MB)")
     elif benchmarks[0].column_name == "alloc_memory_MB":
         ax.set_ylabel("allocated memory (MB)")
 
