@@ -22,6 +22,7 @@ import pandas as pd
 
 from matplotlib.pylab import get_cmap
 from matplotlib import transforms
+from matplotlib.ticker import FuncFormatter
 
 get_cmap("tab20b")
 
@@ -161,18 +162,18 @@ class Benchmark:
 
 
 class RuntimeBenchmark(Benchmark):
-    def __init__(self, filename, in_inset=False):
-        super().__init__(filename, "nanosec_per_fg", in_inset=in_inset)
+    def __init__(self, filename, **kwargs):
+        super().__init__(filename, "nanosec_per_fg", **kwargs)
 
 
 class RSSBenchmark(Benchmark):
-    def __init__(self, filename, in_inset=False):
-        super().__init__(filename, "rss_memory_MB", in_inset=in_inset)
+    def __init__(self, filename, **kwargs):
+        super().__init__(filename, "rss_memory_MB_max", **kwargs)
 
 
 class AllocBenchmark(Benchmark):
-    def __init__(self, filename, in_inset=False):
-        super().__init__(filename, "alloc_memory_MB", in_inset=in_inset)
+    def __init__(self, filename, **kwargs):
+        super().__init__(filename, "alloc_memory_MB", **kwargs)
 
 
 def plot_comparison(
@@ -348,7 +349,7 @@ plot_comparison(
 # ## Combined Plots
 
 
-def plot_combined_PE(outfile):
+def plot_combined_benchmarks1(outfile):
 
     fig = plt.figure(wide=True, aspect_ratio=0.6, width_ratio=1.0)
     axs = fig.subplots(nrows=2, ncols=2, sharex="col", sharey="row")
@@ -468,4 +469,170 @@ def plot_combined_PE(outfile):
     return fig
 
 
-plot_combined_PE("combined_PE.pdf")
+plot_combined_benchmarks1("combined_benchmarks1.pdf")
+
+
+def plot_combined_benchmarks(outfile):
+
+    fig = plt.figure(wide=True, aspect_ratio=0.9, width_ratio=1.0)
+    axs = fig.subplots(nrows=3, ncols=2, sharex="col", sharey="row")
+
+    plot_comparison(
+        RuntimeBenchmark("PE_benchmark_levels.csv", in_inset=True),
+        RuntimeBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
+        RuntimeBenchmark("SM_SemiAD_benchmark_levels.csv", in_inset=True),
+        RuntimeBenchmark("PE_benchmark_levels_full_ad_cheby.csv", in_inset=True),
+        RuntimeBenchmark("C_benchmark_levels_full_ad_cheby.csv", in_inset=True),
+        RuntimeBenchmark("SM_FullADcheby_benchmark_levels.csv", in_inset=True),
+        RuntimeBenchmark("PE_benchmark_levels_full_ad.csv"),
+        RuntimeBenchmark("C_benchmark_levels_full_ad.csv"),
+        RuntimeBenchmark("SM_FullAD_benchmark_levels.csv"),
+        RuntimeBenchmark("SM_benchmark_levels.csv", in_inset=True),
+        inset_pos=[0.55, 0.35, 0.4, 0.6],
+        legend=False,
+        ax=axs[0, 0],
+        xlabel="",
+    )
+
+    plot_comparison(
+        RuntimeBenchmark("PE_benchmark_times.csv", in_inset=True),
+        RuntimeBenchmark("C_benchmark_times_semi_ad.csv", in_inset=True),
+        RuntimeBenchmark("SM_SemiAD_benchmark_times.csv", in_inset=True),
+        RuntimeBenchmark("PE_benchmark_times_full_ad_cheby.csv", in_inset=True),
+        RuntimeBenchmark("C_benchmark_times_full_ad_cheby.csv", in_inset=True),
+        RuntimeBenchmark("SM_FullADcheby_benchmark_times.csv", in_inset=True),
+        RuntimeBenchmark("PE_benchmark_times_full_ad.csv"),
+        RuntimeBenchmark("C_benchmark_times_full_ad.csv"),
+        RuntimeBenchmark("SM_FullAD_benchmark_times.csv"),
+        RuntimeBenchmark("SM_benchmark_times.csv", in_inset=True),
+        inset_pos=[0.1, 0.6, 0.35, 0.35],
+        legend=False,
+        ax=axs[0, 1],
+        ylabel="",
+        xlabel="",
+    )
+
+    plot_comparison(
+        RSSBenchmark("PE_benchmark_levels.csv", in_inset=True),
+        RSSBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
+        RSSBenchmark("SM_SemiAD_benchmark_levels.csv", in_inset=True),
+        RSSBenchmark("PE_benchmark_levels_full_ad_cheby.csv"),
+        RSSBenchmark("C_benchmark_levels_full_ad_cheby.csv"),
+        RSSBenchmark("SM_FullADcheby_benchmark_levels.csv"),
+        RSSBenchmark("PE_benchmark_levels_full_ad.csv"),
+        RSSBenchmark("C_benchmark_levels_full_ad.csv"),
+        RSSBenchmark("SM_FullAD_benchmark_levels.csv"),
+        RSSBenchmark("SM_benchmark_levels.csv", in_inset=True),
+        inset_pos=[0.12, 0.62, 0.35, 0.35],
+        legend=False,
+        ax=axs[1, 0],
+        xlabel="",
+    )
+
+    plot_comparison(
+        RSSBenchmark("PE_benchmark_times.csv", in_inset=True),
+        RSSBenchmark("C_benchmark_times_semi_ad.csv", in_inset=True),
+        RSSBenchmark("SM_SemiAD_benchmark_times.csv", in_inset=True),
+        RSSBenchmark("PE_benchmark_times_full_ad_cheby.csv"),
+        RSSBenchmark("C_benchmark_times_full_ad_cheby.csv"),
+        RSSBenchmark("SM_FullADcheby_benchmark_times.csv"),
+        RSSBenchmark("PE_benchmark_times_full_ad.csv"),
+        RSSBenchmark("C_benchmark_times_full_ad.csv"),
+        RSSBenchmark("SM_FullAD_benchmark_times.csv"),
+        RSSBenchmark("SM_benchmark_times.csv", in_inset=True),
+        inset_pos=[0.12, 0.62, 0.35, 0.35],
+        legend=False,
+        ax=axs[1, 1],
+        xlabel="",
+        ylabel="",
+    )
+
+    plot_comparison(
+        AllocBenchmark("PE_benchmark_levels.csv", in_inset=True),
+        AllocBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
+        AllocBenchmark("SM_SemiAD_benchmark_levels.csv", in_inset=True),
+        AllocBenchmark("PE_benchmark_levels_full_ad_cheby.csv"),
+        AllocBenchmark("C_benchmark_levels_full_ad_cheby.csv"),
+        AllocBenchmark("SM_FullADcheby_benchmark_levels.csv"),
+        AllocBenchmark("PE_benchmark_levels_full_ad.csv"),
+        AllocBenchmark("C_benchmark_levels_full_ad.csv"),
+        AllocBenchmark("SM_FullAD_benchmark_levels.csv"),
+        AllocBenchmark("SM_benchmark_levels.csv", in_inset=True),
+        inset_pos=[0.12, 0.62, 0.35, 0.35],
+        legend=False,
+        ax=axs[2, 0],
+    )
+
+    plot_comparison(
+        AllocBenchmark("PE_benchmark_times.csv", in_inset=True),
+        AllocBenchmark("C_benchmark_times_semi_ad.csv", in_inset=True),
+        AllocBenchmark("SM_SemiAD_benchmark_times.csv", in_inset=True),
+        AllocBenchmark("PE_benchmark_times_full_ad_cheby.csv"),
+        AllocBenchmark("C_benchmark_times_full_ad_cheby.csv"),
+        AllocBenchmark("SM_FullADcheby_benchmark_times.csv"),
+        AllocBenchmark("PE_benchmark_times_full_ad.csv"),
+        AllocBenchmark("C_benchmark_times_full_ad.csv"),
+        AllocBenchmark("SM_FullAD_benchmark_times.csv"),
+        AllocBenchmark("SM_benchmark_times.csv", in_inset=True),
+        inset_pos=[0.12, 0.62, 0.35, 0.35],
+        legend=False,
+        ax=axs[2, 1],
+        ylabel="",
+    )
+
+    y_formatter = FuncFormatter(lambda v, pos: "%.1f" % (v * 1e-6))
+    axs[2, 0].yaxis.set_major_formatter(y_formatter)
+    axs[2, 0].annotate(
+        "×10⁶  ", (0, 1), xycoords="axes fraction", ha="right", va="bottom"
+    )
+
+    # https://stackoverflow.com/questions/9834452
+    lines, labels = axs[0, 0].get_legend_handles_labels()
+    permute = itemgetter(0, 3, 6, 1, 4, 7, 2, 5, 8)
+    l1_offset = transforms.ScaledTranslation(0.25, -4 / 72.0, fig.dpi_scale_trans)
+    l1 = fig.legend(
+        permute(lines),
+        permute(labels),
+        ncol=3,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 1),
+        bbox_transform=(fig.transFigure + l1_offset),
+        frameon=False,
+    )
+    l2_offset = transforms.ScaledTranslation(4.22, -18 / 72.0, fig.dpi_scale_trans)
+    l2 = fig.legend(
+        [lines[9]],
+        [labels[9]],
+        ncol=3,
+        loc="lower left",
+        bbox_to_anchor=(0, 1),
+        bbox_transform=(fig.transFigure + l2_offset),
+        frameon=False,
+    )
+
+    def axes_label(ax, label):
+        ax.annotate(
+            label,
+            (0, 1),
+            xycoords="axes fraction",
+            xytext=(0, 2),
+            textcoords="offset points",
+            verticalalignment="bottom",
+            horizontalalignment="left",
+        )
+
+    axes_label(axs[0, 0], "(a)")
+    axes_label(axs[0, 1], "(b)")
+    axes_label(axs[1, 0], "(c)")
+    axes_label(axs[1, 1], "(d)")
+    axes_label(axs[2, 0], "(e)")
+    axes_label(axs[2, 1], "(f)")
+
+    fig.tight_layout(pad=0.25, h_pad=0.5)
+    fig.savefig(OUTDIR / outfile, bbox_inches="tight")
+    print("Written %s" % (OUTDIR / outfile))
+    print(fig.get_size_inches())
+    return fig
+
+
+plot_combined_benchmarks("combined_benchmarks.pdf")
