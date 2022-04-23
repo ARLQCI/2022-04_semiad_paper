@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # ---
 # jupyter:
 #   jupytext:
@@ -176,6 +177,13 @@ class AllocBenchmark(Benchmark):
         super().__init__(filename, "alloc_memory_MB", **kwargs)
 
 
+def rewrite_to_hs_size(series):
+    df = series.reset_index()
+    df["Hilbert space size"] = df["levels"] ** 2
+    df = df.set_index("Hilbert space size")
+    return df[series.name]
+
+
 def plot_comparison(
     *benchmarks,
     ax=None,
@@ -186,6 +194,7 @@ def plot_comparison(
     outfile=None,
     inset=False,
     legend=True,
+    levels_benchmarks_x="Hilbert space size",
     inset_pos=[0.55, 0.55, 0.4, 0.4],
 ):
 
@@ -199,6 +208,15 @@ def plot_comparison(
         factor = 1e-9
 
     for benchmark in benchmarks:
+
+        if benchmarks[0].index_name == "levels":
+            if levels_benchmarks_x == "number of transmon levels":
+                pass
+            elif levels_benchmarks_x == "Hilbert space size":
+                benchmark.data = rewrite_to_hs_size(benchmark.data)
+            else:
+                raise ValueError(f"invalid {levels_benchmarks_x=}")
+
         ax.plot(
             benchmark.data * factor,
             label=benchmark.label,
@@ -218,14 +236,14 @@ def plot_comparison(
     if xlabel is not None:
         ax.set_xlabel(xlabel)
     elif benchmarks[0].index_name == "levels":
-        ax.set_xlabel("number of transmon levels")
+        ax.set_xlabel(levels_benchmarks_x)
     elif benchmarks[0].index_name == "T":
         ax.set_xlabel("gate duration (ns), number of time steps (10)")
     if ylabel is not None:
         ax.set_ylabel(ylabel)
     elif benchmarks[0].column_name == "nanosec_per_fg":
         ax.set_ylabel("runtime per grad eval (s)")
-    elif benchmarks[0].column_name == "rss_memory_MB":
+    elif benchmarks[0].column_name == "rss_memory_MB_max":
         ax.set_ylabel("RSS peak memory (MB)")
     elif benchmarks[0].column_name == "alloc_memory_MB":
         ax.set_ylabel("allocated memory (MB)")
@@ -265,6 +283,7 @@ plot_comparison(
     RuntimeBenchmark("SM_FullAD_benchmark_levels.csv"),
     RuntimeBenchmark("SM_benchmark_levels.csv", in_inset=True),
     outfile="PE_runtimes_levels.pdf",
+    levels_benchmarks_x="Hilbert space size",
 )
 
 plot_comparison(
@@ -349,7 +368,7 @@ plot_comparison(
 # ## Combined Plots
 
 
-def plot_combined_benchmarks1(outfile):
+def plot_combined_benchmarks1(outfile, **kwargs):
 
     fig = plt.figure(wide=True, aspect_ratio=0.6, width_ratio=1.0)
     axs = fig.subplots(nrows=2, ncols=2, sharex="col", sharey="row")
@@ -369,6 +388,7 @@ def plot_combined_benchmarks1(outfile):
         legend=False,
         ax=axs[0, 0],
         xlabel="",
+        **kwargs,
     )
 
     plot_comparison(
@@ -387,6 +407,7 @@ def plot_combined_benchmarks1(outfile):
         ax=axs[0, 1],
         ylabel="",
         xlabel="",
+        **kwargs,
     )
 
     plot_comparison(
@@ -403,6 +424,7 @@ def plot_combined_benchmarks1(outfile):
         inset_pos=[0.12, 0.62, 0.35, 0.35],
         legend=False,
         ax=axs[1, 0],
+        **kwargs,
     )
 
     plot_comparison(
@@ -420,6 +442,7 @@ def plot_combined_benchmarks1(outfile):
         legend=False,
         ax=axs[1, 1],
         ylabel="",
+        **kwargs,
     )
 
     # https://stackoverflow.com/questions/9834452
@@ -472,7 +495,7 @@ def plot_combined_benchmarks1(outfile):
 plot_combined_benchmarks1("combined_benchmarks1.pdf")
 
 
-def plot_combined_benchmarks(outfile):
+def plot_combined_benchmarks(outfile, **kwargs):
 
     fig = plt.figure(wide=True, aspect_ratio=0.9, width_ratio=1.0)
     axs = fig.subplots(nrows=3, ncols=2, sharex="col", sharey="row")
@@ -492,6 +515,7 @@ def plot_combined_benchmarks(outfile):
         legend=False,
         ax=axs[0, 0],
         xlabel="",
+        **kwargs,
     )
 
     plot_comparison(
@@ -510,6 +534,7 @@ def plot_combined_benchmarks(outfile):
         ax=axs[0, 1],
         ylabel="",
         xlabel="",
+        **kwargs,
     )
 
     plot_comparison(
@@ -527,6 +552,7 @@ def plot_combined_benchmarks(outfile):
         legend=False,
         ax=axs[1, 0],
         xlabel="",
+        **kwargs,
     )
 
     plot_comparison(
@@ -545,6 +571,7 @@ def plot_combined_benchmarks(outfile):
         ax=axs[1, 1],
         xlabel="",
         ylabel="",
+        **kwargs,
     )
 
     plot_comparison(
@@ -561,6 +588,7 @@ def plot_combined_benchmarks(outfile):
         inset_pos=[0.12, 0.62, 0.35, 0.35],
         legend=False,
         ax=axs[2, 0],
+        **kwargs,
     )
 
     plot_comparison(
@@ -578,6 +606,7 @@ def plot_combined_benchmarks(outfile):
         legend=False,
         ax=axs[2, 1],
         ylabel="",
+        **kwargs,
     )
 
     y_formatter = FuncFormatter(lambda v, pos: "%.1f" % (v * 1e-6))
@@ -635,4 +664,10 @@ def plot_combined_benchmarks(outfile):
     return fig
 
 
-plot_combined_benchmarks("combined_benchmarks.pdf")
+plot_combined_benchmarks(
+    "combined_benchmarks_levels.pdf", levels_benchmarks_x="number of transmon levels"
+)
+
+plot_combined_benchmarks(
+    "combined_benchmarks.pdf", levels_benchmarks_x="Hilbert space size"
+)
