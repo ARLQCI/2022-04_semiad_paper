@@ -90,7 +90,7 @@ BENCHMARKS = {
         "method": "full_ad",
         "args": ["J_T_C", "{levels}", "100"],
         "var": "levels",
-        "vals": [3, 4, 5, 6, 7, 8],
+        "vals": [3, 4, 5, 6],
     },
     "C_benchmark_times_full_ad": {
         "method": "full_ad",
@@ -227,6 +227,10 @@ def benchmark_mem(cmd, baseline_mb=0):
 def _benchmark_mem(cmd, filename, baseline_mb=0):
     file = Path("data", "benchmarks", filename)
     log_file = file.with_suffix(".log")
+    mb_min = np.NaN
+    mb_max = np.NaN
+    mb_median = np.NaN
+    status_ok = True
     if not file.is_file():
         try:
             measurements = [float(baseline_mb)]
@@ -252,16 +256,20 @@ def _benchmark_mem(cmd, filename, baseline_mb=0):
             print(
                 "ERROR for %s: %s" % (" ".join(cmd), exc_info), file=sys.stderr
             )
-            return baseline_mb, np.NaN
+            status_ok = False
     if log_file.is_file():
         if "Instability detected. Aborting" in log_file.read_text():
-            return baseline_mb, np.NaN
-    try:
-        measurements = np.loadtxt(file)
-        baseline_mb = measurements[0]
-        return baseline_mb, np.max(measurements[1:])
-    except OSError:
-        return baseline_mb, np.NaN
+            status_ok = False
+    if status_ok:
+        try:
+            measurements = np.loadtxt(file)
+            baseline_mb = measurements[0]
+            mb_min = np.min(measurements[1:])
+            mb_max = np.max(measurements[1:])
+            mb_median = np.median(measurements[1:])
+        except OSError:
+            pass
+    return baseline_mb, mb_max, mb_min, mb_median
 
 
 def assemble_cmds(base, spec):
@@ -332,7 +340,9 @@ def main():
                     spec["var"],
                     "nanosec_per_fg",
                     "alloc_memory_MB",
-                    "rss_memory_MB",
+                    "rss_memory_MB_min",
+                    "rss_memory_MB_max",
+                    "rss_memory_MB_median",
                     "rss_baseline_MB",
                     sep=",",
                     file=out_fh,
@@ -341,12 +351,16 @@ def main():
                     nanosec_per_fg = data_times[i][0]
                     alloc_memory_MB = data_times[i][1]
                     baseline_mb = data_mem[i][0]
-                    rss_memory_MB = data_mem[i][1]
+                    rss_memory_MB_max = data_mem[i][1]
+                    rss_memory_MB_min = data_mem[i][2]
+                    rss_memory_MB_median = data_mem[i][3]
                     print(
                         val,
                         nanosec_per_fg,
                         alloc_memory_MB,
-                        rss_memory_MB,
+                        rss_memory_MB_min,
+                        rss_memory_MB_max,
+                        rss_memory_MB_median,
                         baseline_mb,
                         sep=",",
                         file=out_fh,
