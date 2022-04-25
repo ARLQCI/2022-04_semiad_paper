@@ -196,6 +196,10 @@ def plot_comparison(
     legend=True,
     levels_benchmarks_x="Hilbert space size",
     inset_pos=[0.55, 0.55, 0.4, 0.4],
+    inset_xlim=None,
+    inset_ylim=None,
+    inset_xticks=None,
+    inset_yticks=None,
 ):
 
     fig = None
@@ -248,7 +252,7 @@ def plot_comparison(
     elif benchmarks[0].column_name == "alloc_memory_MB":
         ax.set_ylabel("allocated memory (MB)")
 
-    if True in [benchmark.in_inset for benchmark in benchmarks]:
+    if any([benchmark.in_inset for benchmark in benchmarks]):
         axins = ax.inset_axes(inset_pos)
         for benchmark in benchmarks:
             if benchmark.in_inset:
@@ -258,6 +262,15 @@ def plot_comparison(
                     color=benchmark.color,
                     **benchmark.marker_style,
                 )
+        axins.patch.set_alpha(0.7)
+        if inset_xlim is not None:
+            axins.set_xlim(inset_xlim)
+        if inset_ylim is not None:
+            axins.set_ylim(inset_ylim)
+        if inset_xticks is not None:
+            axins.set_xticks(inset_xticks)
+        if inset_yticks is not None:
+            axins.set_yticks(inset_yticks)
     if fig is not None:
 
         fig.tight_layout(pad=0.0)
@@ -368,6 +381,8 @@ plot_comparison(
 # ## Combined Plots
 
 
+# ## Without Allocations
+
 def plot_combined_benchmarks1(outfile, **kwargs):
 
     fig = plt.figure(wide=True, aspect_ratio=0.6, width_ratio=1.0)
@@ -384,7 +399,10 @@ def plot_combined_benchmarks1(outfile, **kwargs):
         RuntimeBenchmark("C_benchmark_levels_full_ad.csv"),
         RuntimeBenchmark("SM_FullAD_benchmark_levels.csv"),
         RuntimeBenchmark("SM_benchmark_levels.csv", in_inset=True),
-        inset_pos=[0.55, 0.35, 0.4, 0.6],
+        inset_pos=[0.525, 0.5, 0.45, 0.45],
+        inset_ylim=(0, 20),
+        inset_yticks=[0, 10, 20],
+        inset_xticks=[9, 100, 225],
         legend=False,
         ax=axs[0, 0],
         xlabel="",
@@ -402,7 +420,10 @@ def plot_combined_benchmarks1(outfile, **kwargs):
         RuntimeBenchmark("C_benchmark_times_full_ad.csv"),
         RuntimeBenchmark("SM_FullAD_benchmark_times.csv"),
         RuntimeBenchmark("SM_benchmark_times.csv", in_inset=True),
-        inset_pos=[0.1, 0.6, 0.35, 0.35],
+        inset_pos=[0.12, 0.5, 0.45, 0.45],
+        inset_ylim=(0, 20),
+        inset_yticks=[0, 10, 20],
+        inset_xticks=[0, 400, 800],
         legend=False,
         ax=axs[0, 1],
         ylabel="",
@@ -421,7 +442,10 @@ def plot_combined_benchmarks1(outfile, **kwargs):
         RSSBenchmark("C_benchmark_levels_full_ad.csv"),
         RSSBenchmark("SM_FullAD_benchmark_levels.csv"),
         RSSBenchmark("SM_benchmark_levels.csv", in_inset=True),
-        inset_pos=[0.12, 0.62, 0.35, 0.35],
+        inset_pos=[0.525, 0.25, 0.45, 0.45],
+        inset_ylim=(80, 160),
+        inset_yticks=(80, 120, 160),
+        inset_xticks=[9, 100, 225],
         legend=False,
         ax=axs[1, 0],
         **kwargs,
@@ -438,7 +462,10 @@ def plot_combined_benchmarks1(outfile, **kwargs):
         RSSBenchmark("C_benchmark_times_full_ad.csv"),
         RSSBenchmark("SM_FullAD_benchmark_times.csv"),
         RSSBenchmark("SM_benchmark_times.csv", in_inset=True),
-        inset_pos=[0.12, 0.62, 0.35, 0.35],
+        inset_pos=[0.12, 0.5, 0.45, 0.45],
+        inset_ylim=(80, 160),
+        inset_yticks=(80, 120, 160),
+        inset_xticks=[0, 400, 800],
         legend=False,
         ax=axs[1, 1],
         ylabel="",
@@ -495,10 +522,20 @@ def plot_combined_benchmarks1(outfile, **kwargs):
 plot_combined_benchmarks1("combined_benchmarks1.pdf")
 
 
+# ## With Allocations
+
 def plot_combined_benchmarks(outfile, **kwargs):
 
     fig = plt.figure(wide=True, aspect_ratio=0.9, width_ratio=1.0)
     axs = fig.subplots(nrows=3, ncols=2, sharex="col", sharey="row")
+
+    levels_benchmarks_x = kwargs.get("levels_benchmarks_x", "Hilbert space size")
+    if levels_benchmarks_x == "number of transmon levels":
+        inset_levels_xticks = [3, 10, 15]
+    elif levels_benchmarks_x == "Hilbert space size":
+        inset_levels_xticks = [9, 100, 225]
+    else:
+        raise ValueError(f"invalid {levels_benchmarks_x=}")
 
     plot_comparison(
         RuntimeBenchmark("PE_benchmark_levels.csv", in_inset=True),
@@ -511,7 +548,10 @@ def plot_combined_benchmarks(outfile, **kwargs):
         RuntimeBenchmark("C_benchmark_levels_full_ad.csv"),
         RuntimeBenchmark("SM_FullAD_benchmark_levels.csv"),
         RuntimeBenchmark("SM_benchmark_levels.csv", in_inset=True),
-        inset_pos=[0.55, 0.35, 0.4, 0.6],
+        inset_pos=[0.525, 0.5, 0.45, 0.45],
+        inset_ylim=(0, 20),
+        inset_yticks=[0, 10, 20],
+        inset_xticks=inset_levels_xticks,
         legend=False,
         ax=axs[0, 0],
         xlabel="",
@@ -529,7 +569,10 @@ def plot_combined_benchmarks(outfile, **kwargs):
         RuntimeBenchmark("C_benchmark_times_full_ad.csv"),
         RuntimeBenchmark("SM_FullAD_benchmark_times.csv"),
         RuntimeBenchmark("SM_benchmark_times.csv", in_inset=True),
-        inset_pos=[0.1, 0.6, 0.35, 0.35],
+        inset_pos=[0.12, 0.5, 0.45, 0.45],
+        inset_ylim=(0, 20),
+        inset_yticks=[0, 10, 20],
+        inset_xticks=[0, 400, 800],
         legend=False,
         ax=axs[0, 1],
         ylabel="",
@@ -548,7 +591,10 @@ def plot_combined_benchmarks(outfile, **kwargs):
         RSSBenchmark("C_benchmark_levels_full_ad.csv"),
         RSSBenchmark("SM_FullAD_benchmark_levels.csv"),
         RSSBenchmark("SM_benchmark_levels.csv", in_inset=True),
-        inset_pos=[0.12, 0.62, 0.35, 0.35],
+        inset_pos=[0.525, 0.25, 0.45, 0.45],
+        inset_ylim=(80, 160),
+        inset_yticks=(80, 120, 160),
+        inset_xticks=inset_levels_xticks,
         legend=False,
         ax=axs[1, 0],
         xlabel="",
@@ -566,7 +612,10 @@ def plot_combined_benchmarks(outfile, **kwargs):
         RSSBenchmark("C_benchmark_times_full_ad.csv"),
         RSSBenchmark("SM_FullAD_benchmark_times.csv"),
         RSSBenchmark("SM_benchmark_times.csv", in_inset=True),
-        inset_pos=[0.12, 0.62, 0.35, 0.35],
+        inset_pos=[0.12, 0.5, 0.45, 0.45],
+        inset_ylim=(80, 160),
+        inset_yticks=(80, 120, 160),
+        inset_xticks=[0, 400, 800],
         legend=False,
         ax=axs[1, 1],
         xlabel="",
@@ -585,7 +634,10 @@ def plot_combined_benchmarks(outfile, **kwargs):
         AllocBenchmark("C_benchmark_levels_full_ad.csv"),
         AllocBenchmark("SM_FullAD_benchmark_levels.csv"),
         AllocBenchmark("SM_benchmark_levels.csv", in_inset=True),
-        inset_pos=[0.12, 0.62, 0.35, 0.35],
+        inset_pos=[0.4, 0.5, 0.45, 0.45],
+        inset_ylim=(0, 600),
+        inset_yticks=[0, 300, 600],
+        inset_xticks=inset_levels_xticks,
         legend=False,
         ax=axs[2, 0],
         **kwargs,
@@ -602,7 +654,10 @@ def plot_combined_benchmarks(outfile, **kwargs):
         AllocBenchmark("C_benchmark_times_full_ad.csv"),
         AllocBenchmark("SM_FullAD_benchmark_times.csv"),
         AllocBenchmark("SM_benchmark_times.csv", in_inset=True),
-        inset_pos=[0.12, 0.62, 0.35, 0.35],
+        inset_pos=[0.12, 0.5, 0.45, 0.45],
+        inset_ylim=(0, 600),
+        inset_yticks=[0, 300, 600],
+        inset_xticks=[0, 400, 800],
         legend=False,
         ax=axs[2, 1],
         ylabel="",
@@ -671,3 +726,5 @@ plot_combined_benchmarks(
 plot_combined_benchmarks(
     "combined_benchmarks.pdf", levels_benchmarks_x="Hilbert space size"
 )
+
+
