@@ -174,8 +174,8 @@ class RuntimeBenchmark(Benchmark):
 
 
 class RSSBenchmark(Benchmark):
-    def __init__(self, filename, **kwargs):
-        super().__init__(filename, "rss_memory_MB_max", **kwargs)
+    def __init__(self, filename, value="median", **kwargs):
+        super().__init__(filename, f"rss_memory_MB_{value}", **kwargs)
 
 
 class AllocBenchmark(Benchmark):
@@ -206,6 +206,7 @@ def plot_comparison(
     inset_ylim=None,
     inset_xticks=None,
     inset_yticks=None,
+    inset_hook=None,
 ):
 
     fig = None
@@ -253,7 +254,7 @@ def plot_comparison(
         ax.set_ylabel(ylabel)
     elif benchmarks[0].column_name == "nanosec_per_fg":
         ax.set_ylabel("runtime per grad eval (s)")
-    elif benchmarks[0].column_name == "rss_memory_MB_max":
+    elif benchmarks[0].column_name.startswith("rss_memory_MB"):
         ax.set_ylabel("RSS peak memory (MB)")
     elif benchmarks[0].column_name == "alloc_memory_MB":
         ax.set_ylabel("allocated memory (MB)")
@@ -277,6 +278,8 @@ def plot_comparison(
             axins.set_xticks(inset_xticks)
         if inset_yticks is not None:
             axins.set_yticks(inset_yticks)
+        if inset_hook is not None:
+            inset_hook(axins)
     if fig is not None:
 
         fig.tight_layout(pad=0.0)
@@ -326,6 +329,49 @@ plot_comparison(
 
 # ## RSS
 
+import numpy as np
+
+
+def make_plot_rss_range(*benchmark_files, levels_benchmarks_x="Hilbert space size"):
+
+    min_benchmarks = [
+        RSSBenchmark(filename, value="min") for filename in benchmark_files
+    ]
+    max_benchmarks = [
+        RSSBenchmark(filename, value="max") for filename in benchmark_files
+    ]
+
+    index_transform = lambda s: s
+    if min_benchmarks[0].index_name == "levels":
+        if levels_benchmarks_x == "number of transmon levels":
+            pass
+        elif levels_benchmarks_x == "Hilbert space size":
+            index_transform = rewrite_to_hs_size
+        else:
+            raise ValueError(f"invalid {levels_benchmarks_x=}")
+
+    smin = index_transform(min_benchmarks[0].data)
+    smax = index_transform(max_benchmarks[0].data)
+    for min_benchmark, max_benchmark in zip(min_benchmarks, max_benchmarks):
+        smin = np.minimum(smin, min_benchmark.data)
+        smax = np.maximum(smax, max_benchmark.data)
+
+    def _plot_(ax):
+        x = np.array(smin.index)
+        y1 = np.array(smin)
+        y2 = np.array(smax)
+        ax.fill_between(x, y1, y2, alpha=0.2)
+
+    def _plot(ax):
+        for min_benchmark, max_benchmark in zip(min_benchmarks, max_benchmarks):
+            x = np.array(index_transform(min_benchmark.data).index)
+            y1 = np.array(np.array(min_benchmark.data))
+            y2 = np.array(np.array(max_benchmark.data))
+            ax.fill_between(x, y1, y2, color=min_benchmark.color, alpha=0.1)
+
+    return _plot
+
+
 plot_comparison(
     RSSBenchmark("PE_benchmark_levels.csv", in_inset=True),
     RSSBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
@@ -337,10 +383,16 @@ plot_comparison(
     RSSBenchmark("C_benchmark_levels_full_ad.csv"),
     RSSBenchmark("SM_FullAD_benchmark_levels.csv"),
     RSSBenchmark("SM_benchmark_levels.csv", in_inset=True),
-    RSSBenchmark("PE_U_benchmark_levels_semi_ad.csv", in_inset=True),
-    RSSBenchmark("C_U_benchmark_levels_semi_ad.csv", in_inset=True),
+    # RSSBenchmark("PE_U_benchmark_levels_semi_ad.csv", in_inset=True),
+    # RSSBenchmark("C_U_benchmark_levels_semi_ad.csv", in_inset=True),
     outfile="PE_memory_levels.pdf",
     inset_pos=[0.1, 0.6, 0.35, 0.35],
+    inset_hook=make_plot_rss_range(
+        "PE_benchmark_levels.csv",
+        "C_benchmark_levels_semi_ad.csv",
+        "SM_SemiAD_benchmark_levels.csv",
+        "SM_benchmark_levels.csv",
+    ),
 )
 
 plot_comparison(
@@ -356,6 +408,12 @@ plot_comparison(
     RSSBenchmark("SM_benchmark_times.csv", in_inset=True),
     RSSBenchmark("PE_U_benchmark_times_semi_ad.csv", in_inset=True),
     RSSBenchmark("C_U_benchmark_times_semi_ad.csv", in_inset=True),
+    inset_hook=make_plot_rss_range(
+        "PE_benchmark_times.csv",
+        "C_benchmark_times_semi_ad.csv",
+        "SM_SemiAD_benchmark_times.csv",
+        "SM_benchmark_times.csv",
+    ),
     outfile="PE_memory_times.pdf",
     inset_pos=[0.1, 0.62, 0.35, 0.35],
 )
@@ -400,6 +458,7 @@ plot_comparison(
 
 
 # ## Without Allocations
+
 
 def plot_combined_benchmarks1(outfile, **kwargs):
 
@@ -460,6 +519,12 @@ def plot_combined_benchmarks1(outfile, **kwargs):
         RSSBenchmark("C_benchmark_levels_full_ad.csv"),
         RSSBenchmark("SM_FullAD_benchmark_levels.csv"),
         RSSBenchmark("SM_benchmark_levels.csv", in_inset=True),
+        inset_hook=make_plot_rss_range(
+            "PE_benchmark_levels.csv",
+            "C_benchmark_levels_semi_ad.csv",
+            "SM_SemiAD_benchmark_levels.csv",
+            "SM_benchmark_levels.csv",
+        ),
         inset_pos=[0.525, 0.25, 0.45, 0.45],
         inset_ylim=(80, 160),
         inset_yticks=(80, 120, 160),
@@ -480,6 +545,12 @@ def plot_combined_benchmarks1(outfile, **kwargs):
         RSSBenchmark("C_benchmark_times_full_ad.csv"),
         RSSBenchmark("SM_FullAD_benchmark_times.csv"),
         RSSBenchmark("SM_benchmark_times.csv", in_inset=True),
+        inset_hook=make_plot_rss_range(
+            "PE_benchmark_times.csv",
+            "C_benchmark_times_semi_ad.csv",
+            "SM_SemiAD_benchmark_times.csv",
+            "SM_benchmark_times.csv",
+        ),
         inset_pos=[0.12, 0.5, 0.45, 0.45],
         inset_ylim=(80, 160),
         inset_yticks=(80, 120, 160),
@@ -541,6 +612,7 @@ plot_combined_benchmarks1("combined_benchmarks1.pdf")
 
 
 # ## With Allocations
+
 
 def plot_combined_benchmarks(outfile, **kwargs):
 
@@ -609,6 +681,13 @@ def plot_combined_benchmarks(outfile, **kwargs):
         RSSBenchmark("C_benchmark_levels_full_ad.csv"),
         RSSBenchmark("SM_FullAD_benchmark_levels.csv"),
         RSSBenchmark("SM_benchmark_levels.csv", in_inset=True),
+        inset_hook=make_plot_rss_range(
+            "PE_benchmark_levels.csv",
+            "C_benchmark_levels_semi_ad.csv",
+            "SM_SemiAD_benchmark_levels.csv",
+            "SM_benchmark_levels.csv",
+            levels_benchmarks_x=levels_benchmarks_x,
+        ),
         inset_pos=[0.525, 0.25, 0.45, 0.45],
         inset_ylim=(80, 160),
         inset_yticks=(80, 120, 160),
@@ -630,6 +709,13 @@ def plot_combined_benchmarks(outfile, **kwargs):
         RSSBenchmark("C_benchmark_times_full_ad.csv"),
         RSSBenchmark("SM_FullAD_benchmark_times.csv"),
         RSSBenchmark("SM_benchmark_times.csv", in_inset=True),
+        inset_hook=make_plot_rss_range(
+            "PE_benchmark_times.csv",
+            "C_benchmark_times_semi_ad.csv",
+            "SM_SemiAD_benchmark_times.csv",
+            "SM_benchmark_times.csv",
+            levels_benchmarks_x=levels_benchmarks_x,
+        ),
         inset_pos=[0.12, 0.5, 0.45, 0.45],
         inset_ylim=(80, 160),
         inset_yticks=(80, 120, 160),
@@ -744,5 +830,3 @@ plot_combined_benchmarks(
 plot_combined_benchmarks(
     "combined_benchmarks.pdf", levels_benchmarks_x="Hilbert space size"
 )
-
-
