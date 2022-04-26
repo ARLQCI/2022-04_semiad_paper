@@ -181,6 +181,9 @@ class RSSBenchmark(Benchmark):
 class AllocBenchmark(Benchmark):
     def __init__(self, filename, **kwargs):
         super().__init__(filename, "alloc_memory_MB", **kwargs)
+        df = pd.read_csv(BENCHMARKS / filename, index_col=0)
+        df["alloc_memory_MB_per_fg"] = df["alloc_memory_MB"] / df["fg"]
+        self.data = df["alloc_memory_MB_per_fg"].dropna()
 
 
 def rewrite_to_hs_size(series):
@@ -257,7 +260,7 @@ def plot_comparison(
     elif benchmarks[0].column_name.startswith("rss_memory_MB"):
         ax.set_ylabel("RSS peak memory (MB)")
     elif benchmarks[0].column_name == "alloc_memory_MB":
-        ax.set_ylabel("allocated memory (MB)")
+        ax.set_ylabel("alloc per grad eval (MB)")
 
     if any([benchmark.in_inset for benchmark in benchmarks]):
         axins = ax.inset_axes(inset_pos)
@@ -688,7 +691,7 @@ def plot_combined_benchmarks(outfile, **kwargs):
             "SM_benchmark_levels.csv",
             levels_benchmarks_x=levels_benchmarks_x,
         ),
-        inset_pos=[0.525, 0.25, 0.45, 0.45],
+        inset_pos=[0.525, 0.5, 0.45, 0.45],
         inset_ylim=(80, 160),
         inset_yticks=(80, 120, 160),
         inset_xticks=inset_levels_xticks,
@@ -731,16 +734,16 @@ def plot_combined_benchmarks(outfile, **kwargs):
         AllocBenchmark("PE_benchmark_levels.csv", in_inset=True),
         AllocBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
         AllocBenchmark("SM_SemiAD_benchmark_levels.csv", in_inset=True),
-        AllocBenchmark("PE_benchmark_levels_full_ad_cheby.csv"),
-        AllocBenchmark("C_benchmark_levels_full_ad_cheby.csv"),
-        AllocBenchmark("SM_FullADcheby_benchmark_levels.csv"),
+        AllocBenchmark("PE_benchmark_levels_full_ad_cheby.csv", in_inset=True),
+        AllocBenchmark("C_benchmark_levels_full_ad_cheby.csv", in_inset=True),
+        AllocBenchmark("SM_FullADcheby_benchmark_levels.csv", in_inset=True),
         AllocBenchmark("PE_benchmark_levels_full_ad.csv"),
         AllocBenchmark("C_benchmark_levels_full_ad.csv"),
         AllocBenchmark("SM_FullAD_benchmark_levels.csv"),
         AllocBenchmark("SM_benchmark_levels.csv", in_inset=True),
-        inset_pos=[0.4, 0.5, 0.45, 0.45],
-        inset_ylim=(0, 600),
-        inset_yticks=[0, 300, 600],
+        inset_pos=[0.525, 0.5, 0.45, 0.45],
+        inset_ylim=(0, 60),
+        inset_yticks=[0, 30, 60],
         inset_xticks=inset_levels_xticks,
         legend=False,
         ax=axs[2, 0],
@@ -751,16 +754,16 @@ def plot_combined_benchmarks(outfile, **kwargs):
         AllocBenchmark("PE_benchmark_times.csv", in_inset=True),
         AllocBenchmark("C_benchmark_times_semi_ad.csv", in_inset=True),
         AllocBenchmark("SM_SemiAD_benchmark_times.csv", in_inset=True),
-        AllocBenchmark("PE_benchmark_times_full_ad_cheby.csv"),
-        AllocBenchmark("C_benchmark_times_full_ad_cheby.csv"),
-        AllocBenchmark("SM_FullADcheby_benchmark_times.csv"),
+        AllocBenchmark("PE_benchmark_times_full_ad_cheby.csv", in_inset=True),
+        AllocBenchmark("C_benchmark_times_full_ad_cheby.csv", in_inset=True),
+        AllocBenchmark("SM_FullADcheby_benchmark_times.csv", in_inset=True),
         AllocBenchmark("PE_benchmark_times_full_ad.csv"),
         AllocBenchmark("C_benchmark_times_full_ad.csv"),
         AllocBenchmark("SM_FullAD_benchmark_times.csv"),
         AllocBenchmark("SM_benchmark_times.csv", in_inset=True),
         inset_pos=[0.12, 0.5, 0.45, 0.45],
-        inset_ylim=(0, 600),
-        inset_yticks=[0, 300, 600],
+        inset_ylim=(0, 60),
+        inset_yticks=[0, 30, 60],
         inset_xticks=[0, 400, 800],
         legend=False,
         ax=axs[2, 1],
@@ -768,10 +771,10 @@ def plot_combined_benchmarks(outfile, **kwargs):
         **kwargs,
     )
 
-    y_formatter = FuncFormatter(lambda v, pos: "%.1f" % (v * 1e-6))
+    y_formatter = FuncFormatter(lambda v, pos: "%.1f" % (v * 1e-5))
     axs[2, 0].yaxis.set_major_formatter(y_formatter)
     axs[2, 0].annotate(
-        "×10⁶  ", (0, 1), xycoords="axes fraction", ha="right", va="bottom"
+        "×10⁵  ", (0, 1), xycoords="axes fraction", ha="right", va="bottom"
     )
 
     # https://stackoverflow.com/questions/9834452
