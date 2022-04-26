@@ -64,7 +64,6 @@ data/benchmarks/run_benchmarks.log: scripts/run_benchmarks.py $(PYTHON)
 all: semiad_sysimage.so  data/benchmarks/run_benchmarks.log ## Generate all missing output files
 
 clean: ## Remove generated files
-	rm -f data/benchmarks/grape*.log
 	rm -f data/plots/*.pdf
 	rm -f lcov.info
 
