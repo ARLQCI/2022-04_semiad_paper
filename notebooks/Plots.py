@@ -21,7 +21,7 @@ from operator import itemgetter
 import rsmf
 import pandas as pd
 
-from matplotlib.pylab import get_cmap
+from matplotlib.pylab import get_cmap, setp
 from matplotlib import transforms
 from matplotlib.ticker import FuncFormatter
 
@@ -272,6 +272,10 @@ def plot_comparison(
                     color=benchmark.color,
                     **benchmark.marker_style,
                 )
+        axins.tick_params(axis="y", left=True, right=True)
+        tick_bbox = dict(boxstyle="round", ec="white", fc="white", alpha=0.7, pad=0.1)
+        setp(axins.get_xticklabels(), bbox=tick_bbox)
+        setp(axins.get_yticklabels(), bbox=tick_bbox)
         axins.patch.set_alpha(0.7)
         if inset_xlim is not None:
             axins.set_xlim(inset_xlim)
