@@ -13,6 +13,11 @@ import numpy as np
 import h5py
 
 
+COLLECT_ONLY = os.environ.get("COLLECT_ONLY", "") == "1"
+# Run with env var "COLLECT_ONLY=1" in order to only create new CSV files from
+# existing benchmark data.
+
+
 BENCHMARKS = {
     "PE_benchmark_levels": {
         "method": "grape",
@@ -196,7 +201,7 @@ def benchmark_times_alloc(cmd):
     nanosec_per_fg = np.NaN
     alloc_memory_MB = np.NaN
     status_ok = True
-    if not file.is_file():
+    if not (file.is_file() or COLLECT_ONLY):
         try:
             print("RUN:", " ".join(cmd), ">", log_file, file=sys.stderr)
             with open(log_file, "wb", buffering=0) as proc_log:
@@ -237,7 +242,7 @@ def _benchmark_mem(cmd, filename, baseline_mb=0):
     mb_max = np.NaN
     mb_median = np.NaN
     status_ok = True
-    if not file.is_file():
+    if not (file.is_file() or COLLECT_ONLY):
         try:
             measurements = [float(baseline_mb)]
             t_start = time.time()
@@ -314,7 +319,8 @@ def main():
             ],
             filename="hello_world_mem.dat",
         )[1]
-        assert baseline_mb > 0.0
+        if not COLLECT_ONLY:
+            assert baseline_mb > 0.0
         print("Baseline RSS memory (MB)", baseline_mb, "MB", file=sys.stderr)
         baseline_file = Path("data", "benchmarks", "hello_world_mem.dat")
         baseline_file.unlink(missing_ok=True)
