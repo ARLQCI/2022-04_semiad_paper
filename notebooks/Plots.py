@@ -72,6 +72,7 @@ MARKER = {
     "emptysquare": dict(marker="s", fillstyle="none", markersize=7),
     "emptystar": dict(marker="*", fillstyle="none", markersize=7),
     "emptydiamond": dict(marker="D", fillstyle="none", markersize=7),
+    "dashed": dict(linestyle="dashed"),
 }
 
 default_markers = {
@@ -86,7 +87,7 @@ default_markers = {
     ("PE", "Full-AD (ODE)"): MARKER["fulldiamond"],
     ("C", "Full-AD (ODE)"): MARKER["halfdiamond"],
     ("SM", "Full-AD (ODE)"): MARKER["emptydiamond"],
-    ("SM", "Direct (Cheby)"): MARKER["fullcircle"],
+    ("SM", "Direct (Cheby)"): MARKER["dashed"],
 }
 
 
@@ -816,6 +817,20 @@ def plot_combined_benchmarks(outfile, **kwargs):
             horizontalalignment="left",
         )
 
+    def line_label(ax, label, xy, rot=0):
+        bbox_label = dict(boxstyle="round", ec="white", fc="white", alpha=0.7, pad=0.1)
+        ax.annotate(
+            label,
+            xy,
+            xycoords="axes fraction",
+            color=default_colors[("PE", label)],
+            horizontalalignment="center",
+            verticalalignment="center",
+            fontsize=8,
+            bbox=bbox_label,
+            rotation=rot,
+        )
+
     axes_label(axs[0, 0], "(a)")
     axes_label(axs[0, 1], "(b)")
     axes_label(axs[1, 0], "(c)")
@@ -823,10 +838,49 @@ def plot_combined_benchmarks(outfile, **kwargs):
     axes_label(axs[2, 0], "(e)")
     axes_label(axs[2, 1], "(f)")
 
+    if levels_benchmarks_x == "Hilbert space size":
+
+        # top left
+        line_label(axs[0, 0], "Full-AD (ODE)", (0.17, 0.53), 60)
+        line_label(axs[0, 0], "Full-AD (Cheby)", (0.76, 0.18), 3)
+        line_label(axs[0, 0], "Semi-AD (Cheby)", (0.42, 0.15), 0)
+
+        # top right
+        line_label(axs[0, 1], "Full-AD (ODE)", (0.74, 0.83), 25)
+        line_label(axs[0, 1], "Full-AD (Cheby)", (0.76, 0.18), 3)
+        line_label(axs[0, 1], "Semi-AD (Cheby)", (0.42, 0.15), 0)
+
+        # center left
+        line_label(axs[1, 0], "Full-AD (Cheby)", (0.17, 0.42), 30)
+        line_label(axs[1, 0], "Full-AD (ODE)", (0.35, 0.22), 0)
+        line_label(axs[1, 0], "Semi-AD (Cheby)", (0.8, 0.15), 0)
+
+        # center right
+        line_label(axs[1, 1], "Full-AD (Cheby)", (0.78, 0.70), 18)
+        line_label(axs[1, 1], "Full-AD (ODE)", (0.78, 0.32), 10)
+        line_label(axs[1, 1], "Semi-AD (Cheby)", (0.8, 0.15), 0)
+
+        # bottom left
+        line_label(axs[2, 0], "Full-AD (ODE)", (0.15, 0.45), 55)
+        line_label(axs[2, 0], "Full-AD (Cheby)", (0.72, 0.32), 15)
+        line_label(axs[2, 0], "Semi-AD (Cheby)", (0.8, 0.15), 0)
+
+        # bottom right
+        line_label(axs[2, 1], "Full-AD (ODE)", (0.78, 0.65), 30)
+        line_label(axs[2, 1], "Full-AD (Cheby)", (0.76, 0.18), 4)
+        line_label(axs[2, 1], "Semi-AD (Cheby)", (0.42, 0.15), 0)
+
+    print("## Axes Ranges ##")
+    for (i, j) in [(0, 0), (0, 1), (1, 0), (1, 1), (2, 0), (2, 1)]:
+        x0, x1 = axs[i, j].get_xlim()
+        y0, y1 = axs[i, j].get_ylim()
+        print(f"ax[{i}, {j}]:")
+        print(f"    x: {x0:6.1f}  —  {x1:6.1f} ({(x1-x0):6.1f})")
+        print(f"    y: {y0:6.1f}  –  {y1:6.1f} ({(y1-y0):6.1f})")
     fig.tight_layout(pad=0.25, h_pad=0.5)
     fig.savefig(OUTDIR / outfile, bbox_inches="tight")
     print("Written %s" % (OUTDIR / outfile))
-    print(fig.get_size_inches())
+    print(f"Figure size (inches): {fig.get_size_inches()}")
     return fig
 
 
