@@ -259,7 +259,7 @@ def plot_comparison(
     elif benchmarks[0].column_name == "nanosec_per_fg":
         ax.set_ylabel("runtime per grad eval (s)")
     elif benchmarks[0].column_name.startswith("rss_memory_MB"):
-        ax.set_ylabel("RSS peak memory (MB)")
+        ax.set_ylabel("peak RAM usage (MB)")
     elif benchmarks[0].column_name == "alloc_memory_MB":
         ax.set_ylabel("alloc per grad eval (MB)")
 
@@ -697,8 +697,8 @@ def plot_combined_benchmarks(outfile, **kwargs):
             levels_benchmarks_x=levels_benchmarks_x,
         ),
         inset_pos=[0.525, 0.5, 0.45, 0.45],
-        inset_ylim=(80, 160),
-        inset_yticks=(80, 120, 160),
+        inset_ylim=(50, 150),
+        inset_yticks=(50, 100, 150),
         inset_xticks=inset_levels_xticks,
         legend=False,
         ax=axs[1, 0],
@@ -725,8 +725,8 @@ def plot_combined_benchmarks(outfile, **kwargs):
             levels_benchmarks_x=levels_benchmarks_x,
         ),
         inset_pos=[0.12, 0.5, 0.45, 0.45],
-        inset_ylim=(80, 160),
-        inset_yticks=(80, 120, 160),
+        inset_ylim=(50, 150),
+        inset_yticks=(50, 100, 150),
         inset_xticks=[0, 400, 800],
         legend=False,
         ax=axs[1, 1],
@@ -843,32 +843,32 @@ def plot_combined_benchmarks(outfile, **kwargs):
         # top left
         line_label(axs[0, 0], "Full-AD (ODE)", (0.17, 0.53), 60)
         line_label(axs[0, 0], "Full-AD (Cheby)", (0.76, 0.18), 3)
-        line_label(axs[0, 0], "Semi-AD (Cheby)", (0.42, 0.15), 0)
+        line_label(axs[0, 0], "Semi-AD (Cheby)", (0.42, 0.14), 0)
 
         # top right
         line_label(axs[0, 1], "Full-AD (ODE)", (0.74, 0.83), 25)
         line_label(axs[0, 1], "Full-AD (Cheby)", (0.76, 0.18), 3)
-        line_label(axs[0, 1], "Semi-AD (Cheby)", (0.42, 0.15), 0)
+        line_label(axs[0, 1], "Semi-AD (Cheby)", (0.42, 0.14), 0)
 
         # center left
         line_label(axs[1, 0], "Full-AD (Cheby)", (0.17, 0.42), 30)
         line_label(axs[1, 0], "Full-AD (ODE)", (0.35, 0.22), 0)
-        line_label(axs[1, 0], "Semi-AD (Cheby)", (0.8, 0.15), 0)
+        line_label(axs[1, 0], "Semi-AD (Cheby)", (0.83, 0.14), 0)
 
         # center right
-        line_label(axs[1, 1], "Full-AD (Cheby)", (0.78, 0.70), 18)
+        line_label(axs[1, 1], "Full-AD (Cheby)", (0.8, 0.74), 15)
         line_label(axs[1, 1], "Full-AD (ODE)", (0.78, 0.32), 10)
-        line_label(axs[1, 1], "Semi-AD (Cheby)", (0.8, 0.15), 0)
+        line_label(axs[1, 1], "Semi-AD (Cheby)", (0.83, 0.14), 0)
 
         # bottom left
         line_label(axs[2, 0], "Full-AD (ODE)", (0.15, 0.45), 55)
         line_label(axs[2, 0], "Full-AD (Cheby)", (0.72, 0.32), 15)
-        line_label(axs[2, 0], "Semi-AD (Cheby)", (0.8, 0.15), 0)
+        line_label(axs[2, 0], "Semi-AD (Cheby)", (0.83, 0.14), 0)
 
         # bottom right
         line_label(axs[2, 1], "Full-AD (ODE)", (0.78, 0.65), 30)
         line_label(axs[2, 1], "Full-AD (Cheby)", (0.76, 0.18), 4)
-        line_label(axs[2, 1], "Semi-AD (Cheby)", (0.42, 0.15), 0)
+        line_label(axs[2, 1], "Semi-AD (Cheby)", (0.42, 0.14), 0)
 
     print("## Axes Ranges ##")
     for (i, j) in [(0, 0), (0, 1), (1, 0), (1, 1), (2, 0), (2, 1)]:
