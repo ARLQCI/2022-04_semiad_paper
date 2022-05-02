@@ -20,6 +20,7 @@ from pathlib import Path
 from operator import itemgetter
 import rsmf
 import pandas as pd
+from math import floor, ceil
 
 from matplotlib.pylab import get_cmap, setp
 from matplotlib import transforms
@@ -187,6 +188,11 @@ class AllocBenchmark(Benchmark):
         self.data = df["alloc_memory_MB_per_fg"].dropna()
 
 
+class FGBenchmark(Benchmark):
+    def __init__(self, filename, **kwargs):
+        super().__init__(filename, "fg", **kwargs)
+
+
 def rewrite_to_hs_size(series):
     df = series.reset_index()
     df["Hilbert space size"] = df["levels"] ** 2
@@ -288,6 +294,12 @@ def plot_comparison(
             axins.set_yticks(inset_yticks)
         if inset_hook is not None:
             inset_hook(axins)
+
+    if benchmarks[0].column_name == "fg":
+        fg_min = floor(ax.get_ylim()[0])
+        fg_max = ceil(ax.get_ylim()[1])
+        ax.set_yticks(range(fg_min, fg_max))
+
     if fig is not None:
 
         fig.tight_layout(pad=0.0)
@@ -297,6 +309,31 @@ def plot_comparison(
             print("Written %s" % (OUTDIR / outfile))
 
         return fig
+
+
+# ## Number of gradient evaluations
+
+plot_comparison(
+    FGBenchmark("PE_benchmark_levels.csv"),
+    FGBenchmark("C_benchmark_levels_semi_ad.csv"),
+    FGBenchmark("SM_SemiAD_benchmark_levels.csv"),
+    FGBenchmark("SM_benchmark_levels.csv"),
+    # FGBenchmark("PE_U_benchmark_levels_semi_ad.csv"),
+    # FGBenchmark("C_U_benchmark_levels_semi_ad.csv"),
+    outfile="PE_fg_levels.pdf",
+    levels_benchmarks_x="Hilbert space size",
+)
+
+plot_comparison(
+    FGBenchmark("PE_benchmark_times.csv"),
+    FGBenchmark("C_benchmark_times_semi_ad.csv"),
+    FGBenchmark("SM_SemiAD_benchmark_times.csv"),
+    FGBenchmark("SM_benchmark_times.csv"),
+    # FGBenchmark("PE_U_benchmark_times_semi_ad.csv"),
+    # FGBenchmark("C_U_benchmark_times_semi_ad.csv"),
+    outfile="PE_fg_times.pdf",
+    levels_benchmarks_x="Hilbert space size",
+)
 
 
 # ## Runtime
