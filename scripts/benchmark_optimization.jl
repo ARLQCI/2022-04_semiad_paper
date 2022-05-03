@@ -32,6 +32,8 @@ Further options are:
 
 """
 function main(args=ARGS)
+    BenchmarkTools.DEFAULT_PARAMETERS.samples = 20
+    BenchmarkTools.DEFAULT_PARAMETERS.seconds = 86400.0
     local functional, levels, T, method, unitarity_weight, use_threads, force, iters
     try
         functional = Symbol(ARGS[end-2])

@@ -198,7 +198,10 @@ def benchmark_times_alloc(cmd):
     file = Path("data", "benchmarks", filename)
     log_file = file.with_suffix(".log")
     fg = 0
-    nanosec_per_fg = np.NaN
+    # nanosec_per_fg = np.NaN
+    nanosec_per_fg_min = np.NaN
+    nanosec_per_fg_max = np.NaN
+    nanosec_per_fg_median = np.NaN
     alloc_memory_MB = np.NaN
     status_ok = True
     if not (file.is_file() or COLLECT_ONLY):
@@ -208,9 +211,7 @@ def benchmark_times_alloc(cmd):
                 run(cmd, stderr=STDOUT, stdout=proc_log)
             print("DONE", " ".join(cmd), file=sys.stderr)
         except SubprocessError as exc_info:
-            print(
-                "ERROR for %s: %s" % (" ".join(cmd), exc_info), file=sys.stderr
-            )
+            print("ERROR for %s: %s" % (" ".join(cmd), exc_info), file=sys.stderr)
             status_ok = False
     if log_file.is_file():
         if "Instability detected. Aborting" in log_file.read_text():
@@ -218,12 +219,23 @@ def benchmark_times_alloc(cmd):
     if status_ok:
         try:
             data = h5py.File(file, "r")
-            nanosec_per_fg = data["nanosec_per_fg"][()]
+            # nanosec_per_fg = data["nanosec_per_fg"][()]
             fg = int(data["fg"][()])
             alloc_memory_MB = data["alloc_memory_MB"][()]
+            timesref = data["benchmark_result"][()][1]
+            times = data[timesref][()]
+            nanosec_per_fg_min = np.min(times) / fg
+            nanosec_per_fg_max = np.max(times) / fg
+            nanosec_per_fg_median = np.median(times) / fg
         except OSError:
             pass
-    return fg, nanosec_per_fg, alloc_memory_MB
+    return (
+        fg,
+        nanosec_per_fg_min,
+        nanosec_per_fg_max,
+        nanosec_per_fg_median,
+        alloc_memory_MB,
+    )
 
 
 def benchmark_mem(cmd, baseline_mb=0):
@@ -351,7 +363,9 @@ def main():
                 print(
                     spec["var"],
                     "fg",
-                    "nanosec_per_fg",
+                    "nanosec_per_fg_min",
+                    "nanosec_per_fg_max",
+                    "nanosec_per_fg_median",
                     "alloc_memory_MB",
                     "rss_memory_MB_min",
                     "rss_memory_MB_max",
@@ -362,8 +376,10 @@ def main():
                 )
                 for val in spec["vals"]:
                     fg = data_times[i][0]
-                    nanosec_per_fg = data_times[i][1]
-                    alloc_memory_MB = data_times[i][2]
+                    nanosec_per_fg_min = data_times[i][1]
+                    nanosec_per_fg_max = data_times[i][2]
+                    nanosec_per_fg_median = data_times[i][3]
+                    alloc_memory_MB = data_times[i][4]
                     baseline_mb = data_mem[i][0]
                     rss_memory_MB_max = data_mem[i][1]
                     rss_memory_MB_min = data_mem[i][2]
@@ -371,7 +387,9 @@ def main():
                     print(
                         val,
                         fg,
-                        nanosec_per_fg,
+                        nanosec_per_fg_min,
+                        nanosec_per_fg_max,
+                        nanosec_per_fg_median,
                         alloc_memory_MB,
                         rss_memory_MB_min,
                         rss_memory_MB_max,

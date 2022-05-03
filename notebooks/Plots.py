@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.6
+#       jupytext_version: 1.13.8
 #   kernelspec:
 #     display_name: SemiAD Paper
 #     language: python
@@ -171,8 +171,8 @@ class Benchmark:
 
 
 class RuntimeBenchmark(Benchmark):
-    def __init__(self, filename, **kwargs):
-        super().__init__(filename, "nanosec_per_fg", **kwargs)
+    def __init__(self, filename, value="median", **kwargs):
+        super().__init__(filename, f"nanosec_per_fg_{value}", **kwargs)
 
 
 class RSSBenchmark(Benchmark):
@@ -225,7 +225,7 @@ def plot_comparison(
         ax = fig.add_subplot()
     ax.grid(color="gray", alpha=0.25)
 
-    if benchmarks[0].column_name == "nanosec_per_fg":
+    if benchmarks[0].column_name.startswith("nanosec_per_fg"):
         factor = 1e-9
 
     for benchmark in benchmarks:
@@ -262,7 +262,7 @@ def plot_comparison(
         ax.set_xlabel("gate duration (ns), number of time steps (10)")
     if ylabel is not None:
         ax.set_ylabel(ylabel)
-    elif benchmarks[0].column_name == "nanosec_per_fg":
+    elif benchmarks[0].column_name.startswith("nanosec_per_fg"):
         ax.set_ylabel("runtime per grad eval (s)")
     elif benchmarks[0].column_name.startswith("rss_memory_MB"):
         ax.set_ylabel("peak RAM usage (MB)")
