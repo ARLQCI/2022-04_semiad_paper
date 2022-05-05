@@ -171,7 +171,7 @@ class Benchmark:
 
 
 class RuntimeBenchmark(Benchmark):
-    def __init__(self, filename, value="median", **kwargs):
+    def __init__(self, filename, value="min", **kwargs):
         super().__init__(filename, f"nanosec_per_fg_{value}", **kwargs)
 
 
