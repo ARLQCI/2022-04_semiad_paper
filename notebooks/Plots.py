@@ -268,6 +268,8 @@ def plot_comparison(
         ax.set_ylabel("peak RAM usage (MB)")
     elif benchmarks[0].column_name == "alloc_memory_MB":
         ax.set_ylabel("alloc per grad eval (MB)")
+    elif benchmarks[0].column_name == "fg":
+        ax.set_ylabel("gradient evaluations")
 
     if any([benchmark.in_inset for benchmark in benchmarks]):
         axins = ax.inset_axes(inset_pos)
