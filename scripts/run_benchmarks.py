@@ -155,7 +155,7 @@ BENCHMARKS = {
         "method": "full_ad_cheby",
         "args": ["J_T_sm", "{levels}", "100"],
         "var": "levels",
-        "vals": [3, 4, 6, 7, 8],
+        "vals": [3, 4, 5, 6, 7, 8, 9, 10, 12, 15],
     },
     "SM_FullADcheby_benchmark_times": {
         "method": "full_ad_cheby",
