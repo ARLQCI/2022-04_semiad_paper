@@ -5,3 +5,5 @@ psutil==5.9.0
 rsmf==0.2
 ipykernel==6.13
 pandas==1.4.2
+numpy==1.22.3
+scikit-learn==1.0.2

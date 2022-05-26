@@ -20,6 +20,8 @@ from pathlib import Path
 from operator import itemgetter
 import rsmf
 import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
 from math import floor, ceil
 
 from matplotlib.pylab import get_cmap, setp
@@ -374,6 +376,27 @@ plot_comparison(
     inset_pos=[0.1, 0.6, 0.35, 0.35],
 )
 
+RuntimeBenchmark("SM_benchmark_times.csv").data * 1e-9
+
+RuntimeBenchmark("SM_FullADcheby_benchmark_times.csv").data * 1e-9
+
+
+def linear_fit(data, scale=1, exclude=None):
+    """Return intercept and slop of a linear fit on data series."""
+    x = np.array(data.index, dtype=np.float64)
+    y = scale * np.array(data, dtype=np.float64)
+    if exclude is not None:
+        x = np.delete(x, exclude)
+        y = np.delete(y, exclude)
+    linear_regressor = LinearRegression()
+    fit = linear_regressor.fit(x.reshape(-1, 1), y.reshape(-1, 1))
+    return float(fit.intercept_), float(fit.coef_)
+
+
+linear_fit(RuntimeBenchmark("SM_benchmark_times.csv").data, scale=1e-9, exclude=None)
+
+linear_fit(RuntimeBenchmark("SM_FullADcheby_benchmark_times.csv").data, scale=1e-9, exclude=None)
+
 # ## RSS
 
 import numpy as np
@@ -441,6 +464,12 @@ plot_comparison(
         "SM_benchmark_levels.csv",
     ),
 )
+
+# We can determine the offset of the green line:
+
+RSSBenchmark("SM_FullAD_benchmark_levels.csv").data
+
+np.mean(RSSBenchmark("SM_FullAD_benchmark_levels.csv").data)
 
 plot_comparison(
     RSSBenchmark("PE_benchmark_times.csv", in_inset=True),
