@@ -48,10 +48,10 @@ def color(name, index):
 
 
 default_colors = {
+    ("PE", "Semi-AD (H, Cheby)"): color("yellow", 1), # "H" instead of "χ" because of matplotlib unicode problems
+    ("C", "Semi-AD (H, Cheby)"): color("yellow", 2),
     ("PE", "Semi-AD (Cheby)"): color("blue", 1),
     ("C", "Semi-AD (Cheby)"): color("blue", 2),
-    ("PE", "Semi-AD (U, Cheby)"): color("yellow", 1),
-    ("C", "Semi-AD (U, Cheby)"): color("yellow", 2),
     ("SM", "Semi-AD (Cheby)"): color("blue", 3),
     ("PE", "Full-AD (Cheby)"): color("red", 1),
     ("C", "Full-AD (Cheby)"): color("red", 2),
@@ -79,10 +79,10 @@ MARKER = {
 }
 
 default_markers = {
+    ("PE", "Semi-AD (H, Cheby)"): MARKER["fullcircle"],
+    ("C", "Semi-AD (H, Cheby)"): MARKER["halfcircle"],
     ("PE", "Semi-AD (Cheby)"): MARKER["fullcircle"],
     ("C", "Semi-AD (Cheby)"): MARKER["halfcircle"],
-    ("PE", "Semi-AD (U, Cheby)"): MARKER["fullcircle"],
-    ("C", "Semi-AD (U, Cheby)"): MARKER["halfcircle"],
     ("SM", "Semi-AD (Cheby)"): MARKER["emptycircle"],
     ("PE", "Full-AD (Cheby)"): MARKER["fullsquare"],
     ("C", "Full-AD (Cheby)"): MARKER["halfsquare"],
@@ -130,7 +130,7 @@ class Benchmark:
     ):
         self.filename = filename
         if method is None:
-            method = "Semi-AD (Cheby)"
+            method = "Semi-AD (H, Cheby)"
             if ("_full_ad_cheby") in filename or ("_FullADcheby_") in filename:
                 method = "Full-AD (Cheby)"
             elif ("_full_ad." in filename) or ("_FullAD_" in filename):
@@ -140,7 +140,7 @@ class Benchmark:
             elif filename.startswith("SM_SemiAD_benchmark_"):
                 method = "Semi-AD (Cheby)"
             elif ("_U_benchmark" in filename) and ("semi_ad" in filename):
-                method = "Semi-AD (U, Cheby)"
+                method = "Semi-AD (Cheby)"
         self.method = method
         if functional is None:
             if filename.startswith("PE_"):
@@ -704,8 +704,8 @@ def plot_combined_benchmarks(outfile, **kwargs):
         raise ValueError(f"invalid {levels_benchmarks_x=}")
 
     plot_comparison(
-        RuntimeBenchmark("PE_benchmark_levels.csv", in_inset=True),
-        RuntimeBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
+        RuntimeBenchmark("PE_U_benchmark_levels_semi_ad.csv", in_inset=True),
+        RuntimeBenchmark("C_U_benchmark_levels_semi_ad.csv", in_inset=True),
         RuntimeBenchmark("SM_SemiAD_benchmark_levels.csv", in_inset=True),
         RuntimeBenchmark("PE_benchmark_levels_full_ad_cheby.csv", in_inset=True),
         RuntimeBenchmark("C_benchmark_levels_full_ad_cheby.csv", in_inset=True),
@@ -725,8 +725,8 @@ def plot_combined_benchmarks(outfile, **kwargs):
     )
 
     plot_comparison(
-        RuntimeBenchmark("PE_benchmark_times.csv", in_inset=True),
-        RuntimeBenchmark("C_benchmark_times_semi_ad.csv", in_inset=True),
+        RuntimeBenchmark("PE_U_benchmark_times_semi_ad.csv", in_inset=True),
+        RuntimeBenchmark("C_U_benchmark_times_semi_ad.csv", in_inset=True),
         RuntimeBenchmark("SM_SemiAD_benchmark_times.csv", in_inset=True),
         RuntimeBenchmark("PE_benchmark_times_full_ad_cheby.csv", in_inset=True),
         RuntimeBenchmark("C_benchmark_times_full_ad_cheby.csv", in_inset=True),
@@ -747,8 +747,8 @@ def plot_combined_benchmarks(outfile, **kwargs):
     )
 
     plot_comparison(
-        RSSBenchmark("PE_benchmark_levels.csv", in_inset=True),
-        RSSBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
+        RSSBenchmark("PE_U_benchmark_levels_semi_ad.csv", in_inset=True),
+        RSSBenchmark("C_U_benchmark_levels_semi_ad.csv", in_inset=True),
         RSSBenchmark("SM_SemiAD_benchmark_levels.csv", in_inset=True),
         RSSBenchmark("PE_benchmark_levels_full_ad_cheby.csv"),
         RSSBenchmark("C_benchmark_levels_full_ad_cheby.csv"),
@@ -775,8 +775,8 @@ def plot_combined_benchmarks(outfile, **kwargs):
     )
 
     plot_comparison(
-        RSSBenchmark("PE_benchmark_times.csv", in_inset=True),
-        RSSBenchmark("C_benchmark_times_semi_ad.csv", in_inset=True),
+        RSSBenchmark("PE_U_benchmark_times_semi_ad.csv", in_inset=True),
+        RSSBenchmark("C_U_benchmark_times_semi_ad.csv", in_inset=True),
         RSSBenchmark("SM_SemiAD_benchmark_times.csv", in_inset=True),
         RSSBenchmark("PE_benchmark_times_full_ad_cheby.csv"),
         RSSBenchmark("C_benchmark_times_full_ad_cheby.csv"),
@@ -804,8 +804,8 @@ def plot_combined_benchmarks(outfile, **kwargs):
     )
 
     plot_comparison(
-        AllocBenchmark("PE_benchmark_levels.csv", in_inset=True),
-        AllocBenchmark("C_benchmark_levels_semi_ad.csv", in_inset=True),
+        AllocBenchmark("PE_U_benchmark_levels_semi_ad.csv", in_inset=True),
+        AllocBenchmark("C_U_benchmark_levels_semi_ad.csv", in_inset=True),
         AllocBenchmark("SM_SemiAD_benchmark_levels.csv", in_inset=True),
         AllocBenchmark("PE_benchmark_levels_full_ad_cheby.csv", in_inset=True),
         AllocBenchmark("C_benchmark_levels_full_ad_cheby.csv", in_inset=True),
@@ -824,8 +824,8 @@ def plot_combined_benchmarks(outfile, **kwargs):
     )
 
     plot_comparison(
-        AllocBenchmark("PE_benchmark_times.csv", in_inset=True),
-        AllocBenchmark("C_benchmark_times_semi_ad.csv", in_inset=True),
+        AllocBenchmark("PE_U_benchmark_times_semi_ad.csv", in_inset=True),
+        AllocBenchmark("C_U_benchmark_times_semi_ad.csv", in_inset=True),
         AllocBenchmark("SM_SemiAD_benchmark_times.csv", in_inset=True),
         AllocBenchmark("PE_benchmark_times_full_ad_cheby.csv", in_inset=True),
         AllocBenchmark("C_benchmark_times_full_ad_cheby.csv", in_inset=True),
@@ -951,10 +951,6 @@ def plot_combined_benchmarks(outfile, **kwargs):
     print(f"Figure size (inches): {fig.get_size_inches()}")
     return fig
 
-
-plot_combined_benchmarks(
-    "combined_benchmarks_levels.pdf", levels_benchmarks_x="number of transmon levels"
-)
 
 plot_combined_benchmarks(
     "combined_benchmarks.pdf", levels_benchmarks_x="Hilbert space size"
