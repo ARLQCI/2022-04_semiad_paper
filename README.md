@@ -1,4 +1,8 @@
-# Semi-Automatic Differentiation
+# Quantum Optimal Control via Semi-Automatic Differentiation
+
+This repository contains scripts, notebooks and data for the paper [Quantum Optimal Control via Semi-Automatic Differentiation](https://arxiv.org/abs/2205.15044).
+
+The methods described in the paper are implemented are implemented in [`GRAPE.jl`](https://github.com/JuliaQuantumControl/GRAPE.jl) and [`Krotov.jl`](https://github.com/JuliaQuantumControl/Krotov.jl), which are part of the [JuliaQuantumControl](https://github.com/JuliaQuantumControl#a-julia-framework-for-quantum-optimal-control) framework.
 
 
 ## Prerequisites
