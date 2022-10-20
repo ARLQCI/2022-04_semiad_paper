@@ -1,3 +1,7 @@
+[![arXiv](https://img.shields.io/badge/arXiv-2205.15044-b31b1b.svg)](https://arxiv.org/abs/2205.15044)
+[![DOI](https://zenodo.org/badge/477244307.svg)](https://zenodo.org/badge/latestdoi/477244307)
+
+
 # Quantum Optimal Control via Semi-Automatic Differentiation
 
 This repository contains scripts, notebooks and data for the paper [Quantum Optimal Control via Semi-Automatic Differentiation](https://arxiv.org/abs/2205.15044).
